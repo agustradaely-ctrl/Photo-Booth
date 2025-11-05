@@ -262,6 +262,36 @@ select {
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 12px;
+  
+}
+/* ===== RESPONSIVE UNTUK HP/SCREEN KECIL ===== */
+@media (max-width: 768px) {
+  #main-container {
+    flex-direction: column; /* kolom kiri-tengah-kanan jadi atas-bawah */
+    align-items: center;
+    gap: 20px;
+  }
+
+  #left-panel, #right-panel {
+    width: 90%; /* panel kiri & kanan lebih kecil agar muat layar HP */
+    display: flex;
+    flex-direction: row; /* tombol-tombol tersusun horizontal */
+    flex-wrap: wrap; /* jika terlalu banyak, pindah baris */
+    justify-content: center;
+  }
+
+  #center-panel {
+    width: 100%;
+  }
+
+  video, canvas, #frame-overlay {
+    width: 100%; /* video & frame memenuhi layar HP */
+    height: auto;
+  }
+
+  #videoControls {
+    bottom: 10px; /* geser tombol kontrol video agar muat */
+  }
 }
 </style>
 </head>
