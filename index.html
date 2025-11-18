@@ -1,15 +1,256 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff416c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Photo Booth">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/192/1006/1006771.png">
+
+<!-- Mobile Optimized -->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Photo Booth Live Frame dengan Timer & Suara</title>
+<title>Photo Booth Pro - Studio Experience</title>
 
+<!-- PREMIUM STYLES -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
+
 <style>
-/* ===== BODY & LAYOUT PREMIUM ===== */
+/* ===== GLOBAL BLUE & MINT LUXURY THEME ===== */
+:root {
+  /* Color System Blue & Mint Luxury */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #4ECDC4 50%, #44A08D 100%);
+  --secondary-gradient: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+  --accent-mint: #4ECDC4;
+  --accent-blue: #667eea;
+  --accent-purple: #764ba2;
+  --gold-color: #FFD700;
+  --platinum: #E8E8E8;
+  --luxury-bg: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0fff0 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --glass-effect: rgba(255, 255, 255, 0.92);
+  --text-primary: #2C3E50;
+  --text-secondary: #5D6D7E;
+  --shadow-soft: 0 12px 40px rgba(102, 126, 234, 0.15);
+  --shadow-medium: 0 20px 60px rgba(74, 205, 196, 0.2);
+  --shadow-glow: 0 0 30px rgba(74, 205, 196, 0.4);
+}
+
+/* ===== RESET & GLOBAL STYLES ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, sans-serif;
+  background: var(--luxury-bg);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(74, 205, 196, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ===== GLASS MORPHISM LUXURY ===== */
+.glass-card {
+  background: var(--glass-effect);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  box-shadow: 
+    var(--shadow-soft),
+    inset 0 1px 20px rgba(255, 255, 255, 0.6);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.1) 0%, 
+    rgba(74, 205, 196, 0.1) 50%, 
+    rgba(255, 255, 255, 0.2) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--primary-gradient);
+  border-radius: 30px;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::after {
+  opacity: 0.3;
+}
+
+/* ===== LUXURY BUTTONS BLUE & MINT ===== */
+button, .btn-premium {
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 20px;
+  padding: 18px 36px;
+  font-weight: 800;
+  font-size: 16px;
+  color: rgba(19, 166, 199, 0.833);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+button::before, .btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.368), 
+    rgba(255, 255, 255, 0), 
+    rgba(255, 255, 255, 0), 
+    transparent);
+  transition: left 0.8s;
+}
+
+button:hover::before, .btn-premium:hover::before {
+  left: 100%;
+}
+
+button:hover, .btn-premium:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 
+    var(--shadow-medium),
+    var(--shadow-glow);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+button:active, .btn-premium:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ===== MINT SPECIAL BUTTON ===== */
+.btn-mint {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+  box-shadow: 0 12px 40px rgba(74, 205, 196, 0.3);
+}
+
+.btn-mint:hover {
+  box-shadow: 
+    0 20px 50px rgba(74, 205, 196, 0.4),
+    0 0 30px rgba(74, 205, 196, 0.5);
+}
+
+/* ===== BLUE SPECIAL BUTTON ===== */
+.btn-blue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+}
+
+.btn-blue:hover {
+  box-shadow: 
+    0 20px 50px rgba(102, 126, 234, 0.4),
+    0 0 30px rgba(102, 126, 234, 0.5);
+}
+
+
+/* ===== SIDEBAR LUXURY ===== */
+#sidebar {
+  background: linear-gradient(180deg, hsla(0, 0%, 100%, 0) 0%, hsla(172, 100%, 97%, 0.902) 100%) !important;
+  border-right: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 
+    12px 0 40px rgba(102, 126, 234, 0.15),
+    inset 2px 0 20px rgba(255, 255, 255, 0.6) !important;
+}
+
+#sidebar li {
+  background: rgba(255, 255, 255, 0.8) !important;
+  margin: 15px 25px !important;
+  border-radius: 20px !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+#sidebar li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-gradient);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+#sidebar li:hover::before {
+  left: 0;
+}
+
+#sidebar li:hover {
+  color: white !important;
+  transform: translateX(15px) scale(1.08) !important;
+  box-shadow: 
+    0 12px 30px rgba(102, 126, 234, 0.3),
+    0 0 20px rgba(74, 205, 196, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+
 body {
   font-family: 'Montserrat', sans-serif;
   background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
@@ -133,28 +374,61 @@ body.sidebar-closed #mainContent {
 }
 
 /* CAMERA CONTAINER */
+/* ✅ PERBESAR CAMERA CONTAINER */
 #camera-container {
   position: relative;
   display: none;
-  border-radius: 30px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0,0,0,0.7);
   background: #111;
   border: 2px solid rgba(255,255,255,0.1);
   width: 100%;
-  max-width: 540px;
-  margin: auto;
+  max-width: 1000px; /* ✅ DIPERBESAR LAGI DARI 800px */
+  margin: 20px auto;
+  aspect-ratio: 4/3;
+  min-height: 600px; /* ✅ TINGGI MINIMAL */
 }
 
-/* VIDEO & FRAME */
+/* ✅ PERBESAR VIDEO & CANVAS */
 video, canvas, #frame-overlay {
   width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  border-radius: 30px;
+  height: 100%;
+  border-radius: 20px;
   object-fit: cover;
   box-shadow: inset 0 0 25px rgba(255,255,255,0.08);
   transform: scaleX(-1);
+  min-height: 600px; /* ✅ PASTIKAN TINGGI CUKUP */
+}
+
+/* ✅ PERBESAR COUNTDOWN */
+#countdown {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 120px; /* ✅ DIPERBESAR DARI 95px */
+  font-weight: 900;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff, 0 0 25px rgba(0,255,255,0.5);
+  display: none;
+}
+
+/* ✅ PERBESAR VIDEO TIMER */
+#videoTimer {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px; /* ✅ DIPERBESAR DARI 28px */
+  font-weight: 700;
+  color: #00ffea;
+  background: rgba(0,0,0,0.55);
+  padding: 12px 25px; /* ✅ PADDING DIPERBESAR */
+  border-radius: 20px;
+  display: none;
+  box-shadow: 0 8px 25px rgba(0,255,255,0.25);
+  text-shadow: 0 0 5px #00fff0;
 }
 
 /* FRAME OVERLAY */
@@ -164,41 +438,12 @@ video, canvas, #frame-overlay {
   left: 0;
   pointer-events: none;
   display: none;
-  border-radius: 30px;
+  border-radius: 20px;
   box-shadow: 0 0 25px rgba(255,255,255,0.2);
   transform: scaleX(-1);
   z-index: 2;
 }
 
-/* COUNTDOWN NEON */
-#countdown {
-  position: absolute;
-  top: 42%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 95px;
-  font-weight: 900;
-  color: #00ffff;
-  text-shadow: 0 0 10px #00ffff, 0 0 25px rgba(0,255,255,0.5);
-  display: none;
-}
-
-/* VIDEO TIMER */
-#videoTimer {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 28px;
-  font-weight: 700;
-  color: #00ffea;
-  background: rgba(0,0,0,0.55);
-  padding: 8px 20px;
-  border-radius: 20px;
-  display: none;
-  box-shadow: 0 8px 25px rgba(0,255,255,0.25);
-  text-shadow: 0 0 5px #00fff0;
-}
 
 /* ===== BUTTONS PREMIUM ICON STYLE ===== */
 button, select {
@@ -468,49 +713,532 @@ select option:hover {
     font-size: 0.9rem !important;
 }
 
-/* ===== ✅ RESPONSIVE SCALING (TAMPILAN SAMA TAPI LEBIH KECIL) ===== */
+/* ✅ UPDATE MAIN CONTAINER UNTUK KAMERA BESAR */
+#main-container {
+  display: flex;
+  gap: 30px; /* ✅ JARAK DIPERBESAR */
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 200px; /* ✅ LEBAR MAX DIPERBESAR */
+  margin: 0 auto;
+  padding: 1px;
+}
+
+/* ✅ PERBESAR CENTER PANEL */
+#center-panel {
+  position: relative;
+  flex: 1; /* ✅ GUNAKAN FLEX UNTUK RESPONSIVE */
+  max-width: 1000px; /* ✅ MAX WIDTH BESAR */
+}
+
+/* ✅ SESUAIKAN PANEL KIRI & KANAN */
+#left-panel, #right-panel {
+  margin-top: 100px; /* ✅ SESUAIKAN POSISI VERTIKAL */
+}
+
+/* ✅ TOMBOL LEBIH BESAR UNTUK KAMERA BESAR */
+#left-panel button, #right-panel select {
+  padding: 16px 28px; /* ✅ TOMBOL LEBIH BESAR */
+  font-size: 16px;
+  min-width: 180px; /* ✅ LEBAR MINIMAL TOMBOL */
+}
+
+/* ✅ PAKET TIMER DISPLAY LEBIH BESAR */
+#paketTimerDisplay {
+  font-size: 28px; /* ✅ DIPERBESAR DARI 24px */
+  font-weight: bold;
+  color: #00ffea;
+  background: rgba(0,0,0,0.5);
+  padding: 12px 24px;
+  border-radius: 20px;
+  text-align: center;
+  display: none;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(0,255,255,0.3);
+}
+
+/* ✅ RESPONSIVE UNTUK KAMERA BESAR */
+@media (max-width: 1200px) {
+  #main-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  #camera-container {
+    max-width: 90%;
+    min-height: 500px;
+  }
+  
+  #left-panel, #right-panel {
+    margin-top: 30px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+}
+
 @media (max-width: 768px) {
-    #main-container {
-        transform: scale(0.8);
-        transform-origin: top center;
-        margin: -30px auto;
-        width: 100%;
+  #camera-container {
+    max-width: 95%;
+    min-height: 400px;
+    aspect-ratio: 3/4; /* ✅ ASPECT RATIO VERTICAL DI MOBILE */
+  }
+  
+  #countdown {
+    font-size: 80px; /* ✅ SESUAIKAN UNTUK MOBILE */
+  }
+  
+  #videoTimer {
+    font-size: 24px;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #camera-container {
+    min-height: 300px;
+    max-width: 100%;
+  }
+  
+  video, canvas, #frame-overlay {
+    min-height: 300px;
+  }
+
+  @media (max-width: 768px) {
+    #download-section {
+        position: fixed;
+        bottom: 80px;
+        right: 10px;
+        gap: 8px;
     }
     
-    /* Pastikan tombol tetap bisa diklik */
-    button, select {
-        min-height: 44px;
+    .btn-download-small, .btn-print-small {
+        padding: 10px 16px;
+        font-size: 12px;
+        min-width: 100px;
     }
 }
 
 @media (max-width: 480px) {
-    #main-container {
-        transform: scale(0.7);
-        margin: -50px auto;
+    #download-section {
+        bottom: 50px;
+        right: 5px;
+    }
+    
+    .btn-download-small, .btn-print-small {
+        padding: 8px 12px;
+        font-size: 11px;
+        min-width: 90px;
+    }
+}
+}
+
+/* ✅ POPUP BUKTI PEMBAYARAN STYLE BANK */
+.bukti-pembayaran-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.bukti-pembayaran-content {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* HEADER BUKTI PEMBAYARAN */
+.bukti-header {
+    background: linear-gradient(145deg, #004b8d, #0066cc);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.bukti-header h3 {
+    margin: 0;
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+.bukti-header .bank-name {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+/* BODY BUKTI PEMBAYARAN */
+.bukti-body {
+    padding: 20px;
+}
+
+.status-berhasil {
+    text-align: center;
+    color: #00a650;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0, 166, 80, 0.1);
+    border-radius: 8px;
+}
+
+.detail-transaksi {
+    border-top: 2px dashed #ddd;
+    border-bottom: 2px dashed #ddd;
+    padding: 15px 0;
+    margin: 15px 0;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.detail-item .label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #333;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* FOOTER DENGAN TOMBOL */
+.bukti-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-download {
+    background: linear-gradient(145deg, #00a650, #008c46);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-oke {
+    background: linear-gradient(145deg, #004b8d, #0066cc);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.btn-download:hover, .btn-oke:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* ANIMASI */
+@keyframes slideInBukti {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
-@media (max-width: 360px) {
-    #main-container {
-        transform: scale(0.6);
-        margin: -60px auto;
-    }
+.bukti-pembayaran-content {
+    animation: slideInBukti 0.4s ease-out;
+}
+
+/* ✅ MODAL PETUNJUK PENGGUNAAN */
+.modal-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e3c72, #2a5298);
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #00ffea;
+}
+
+.close-modal {
+    font-size: 28px;
+    cursor: pointer;
+    color: #ff416c;
+}
+
+.close-modal:hover {
+    color: #ff4b2b;
+}
+
+/* TAB SYSTEM */
+.tab-container {
+    padding: 0;
+}
+
+.tab-buttons {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    background: rgba(255, 65, 108, 0.3);
+    color: #fff;
+    border-bottom: 3px solid #ff416c;
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-content {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* CONTENT STYLING */
+.tab-pane h3 {
+    color: #00ffea;
+    margin-top: 0;
+}
+
+.tab-pane ol {
+    line-height: 1.8;
+    padding-left: 20px;
+}
+
+.tab-pane li {
+    margin-bottom: 10px;
+}
+
+.guide-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.guide-item h4 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+}
+
+.package-comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.package-comparison th,
+.package-comparison td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.package-comparison th {
+    background: rgba(255, 65, 108, 0.3);
+    color: #ffd700;
+}
+
+.package-comparison tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.faq-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.faq-item h4 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+}
+
+.faq-item p {
+    margin: 0;
+    color: #ccc;
+}
+
+.modal-footer {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.btn-oke {
+    background: linear-gradient(145deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-oke:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+}
+
+/* ==== TOMBOL DOWNLOAD & CETAK KECIL ==== */
+.btn-download-small, .btn-print-small {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    letter-spacing: 0.5px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    min-width: 120px;
+    text-align: center;
+}
+
+.btn-download-small {
+    background: linear-gradient(145deg, #0072ff, #00c6ff);
+}
+
+.btn-print-small {
+    background: linear-gradient(145deg, #ff8c00, #ff2d00);
+}
+
+.btn-download-small:hover, .btn-print-small:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-medium), var(--shadow-glow);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-download-small:active, .btn-print-small:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* Efek ripple untuk tombol kecil */
+.btn-download-small::before, .btn-print-small::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.btn-download-small:hover::before, .btn-print-small:hover::before {
+    left: 100%;
 }
 
 </style>
 </head>
 <body>
 
+<!-- ✅ LUXURY PARTICLE BACKGROUND -->
+<div id="luxury-particles" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; opacity: 0.6;"></div>
+
 <!-- ===== ✅ HARUS DI BAWAH INI: HAMBURGER & SIDEBAR ===== -->
 <div id="hamburger-menu" style="display:none;">☰</div>
 <!-- Sidebar Vertikal -->
 <div id="sidebar">
   <ul>
+    <li id="menuLogin">🔐 Login/Register</li>
     <li id="menuHome">🏠Home</li>
     <li id="menuGuide">📖 Petunjuk Penggunaan</li>
-    <li id="menuAbout">ℹ Tentang Kami</li>
+    <li id="menuHubungi">📞 Hubungi Kami</li>
   </ul>
 </div>
+
 
 <!-- ===== DASHBOARD UTAMA ===== -->
 <div id="dashboard" style="text-align:center; margin-top:80px;">
@@ -532,10 +1260,11 @@ select option:hover {
   <h1>📸 Photo Booth</h1>
 
 <!-- MAIN CONTAINER 3 KOLOM -->
-<div id="main-container" style="display:flex; gap:30px; justify-content:center; align-items:flex-start;">
+<div id="main-container" style="display:flex; gap:20px; justify-content:center; align-items:flex-start; max-width:1200px; margin:0 auto;">
+
 
   <!-- KOLOM KIRI: tombol utama -->
-  <div id="left-panel" style="display:flex; flex-direction:column; gap:3px; margin-top:70px;">
+  <div id="left-panel" style="display:flex; flex-direction:column; gap:50px; margin-top:70px;">
     <button id="startBtn">Nyalakan Kamera</button>
     <button id="captureBtn">Ambil Foto</button>
     <button id="videoBtn">Video</button>
@@ -549,7 +1278,7 @@ select option:hover {
      style="font-size: 24px; font-weight: bold; color: #00ffea; 
             background: rgba(0,0,0,0.5); padding: 8px 18px; 
             border-radius: 18px; text-align:center; display:none;
-            margin-bottom: 22px;">
+            margin-bottom: 2px;">
 </div>
     <div id="camera-container">
       <video id="video" autoplay></video>
@@ -567,7 +1296,7 @@ select option:hover {
   </div>
 
   <!-- KOLOM KANAN: timer, filter, frame -->
-  <div id="right-panel" style="display:flex; flex-direction:column; gap:22px; margin-top:80px;">
+  <div id="right-panel" style="display:flex; flex-direction:column; gap:42px; margin-top:100px;">
     <label for="timerSelect">Timer:</label>
     <select id="timerSelect">
       <option value="0">Tanpa Timer</option>
@@ -594,21 +1323,21 @@ select option:hover {
       <option value="frame3.png">Frame 3</option>
       <option value="frame4.png">Frame 4</option>
     </select>
+    
   </div>
 </div>
 
-<h3 style="text-align:center; margin-top:80px;">Hasil Foto/Video</h3>
+<h3 style="text-align:center; margin-top:10px;">Hasil Foto/Video</h3>
 <div id="gallery"></div>
 
- <!-- ✅ TOMBOL BARU: Download & Cetak -->
-    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:20px;">
-        <button id="downloadBtn" style="width:100%; background:linear-gradient(145deg, #0072ff, #00c6ff);">
-            📥 Download Hasil
-        </button>
-        <button id="printBtn" style="width:100%; background:linear-gradient(145deg, #ff8c00, #ff2d00); margin-top:10px;">
-            🖨 Cetak Foto
-        </button>
-    </div>
+<div id="download-section" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
+    <button id="downloadBtn" class="btn-download-small">
+        💾 Download Foto/Video
+    </button>
+    <button id="printBtn" class="btn-print-small">
+        🖨 Cetak Foto
+    </button>
+</div>
 </div>
 
 <div id="previewModal" onclick="this.style.display='none'">
@@ -633,6 +1362,34 @@ select option:hover {
     <label>No. HP:</label><br>
     <input type="tel" id="nohp" placeholder="08xxxxxxxxxx" required><br><br>
 
+    <!-- ✅ FIELD JENIS PAKET -->
+    <label>Jenis Paket:</label><br>
+    <input type="text" id="jenisPaket" readonly style="
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: not-allowed;
+    "><br><br>
+
+    <!-- ✅ FIELD BARU: HARGA PAKET -->
+    <label>Harga Paket:</label><br>
+    <input type="text" id="hargaPaket" readonly style="
+        background: rgba(255,255,255,0.1);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        cursor: not-allowed;
+        font-weight: bold;
+        color: #00ffea;
+    "><br><br>
+
     <label>Metode Pembayaran:</label><br>
     <select id="metode">
       <option value="">-- Pilih Metode --</option>
@@ -654,12 +1411,21 @@ select option:hover {
 
   <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin-top:30px;">
 
+    <!-- ✅ PAKET TRIAL BARU -->
+    <div style="background:linear-gradient(145deg, #4CAF50, #45a049); color:white; padding:20px; border-radius:10px; width:250px;">
+      <h3>🎯 Paket Trial</h3>
+      <p>Durasi: 10 menit</p>
+      <p>3 Foto + 1 Video</p>
+      <p>Harga: <strong>GRATIS</strong></p>
+      <button onclick="pilihPaket('Trial')" style="background:linear-gradient(145deg, #FF9800, #F57C00);">Coba Sekarang</button>
+    </div>
+
     <!-- Paket Basic -->
     <div style="background:#222; color:white; padding:20px; border-radius:10px; width:250px;">
       <h3>📸 Paket Basic</h3>
       <p>Durasi: 1 jam</p>
       <p>10 Foto + 2 Video</p>
-      <p>Harga: Rp 150.000</p>
+      <p>Harga: Rp 10.000</p>
       <button onclick="pilihPaket('Basic')">Pilih Paket Ini</button>
     </div>
 
@@ -668,7 +1434,7 @@ select option:hover {
       <h3>🌟 Paket Premium</h3>
       <p>Durasi: 2 jam</p>
       <p>20 Foto + 5 Video</p>
-      <p>Harga: Rp 250.000</p>
+      <p>Harga: Rp 15.000</p>
       <button onclick="pilihPaket('Premium')">Pilih Paket Ini</button>
     </div>
 
@@ -677,13 +1443,369 @@ select option:hover {
       <h3>👑 Paket VIP</h3>
       <p>Durasi: 3 jam</p>
       <p>Unlimited Foto + 10 Video</p>
-      <p>Harga: Rp 400.000</p>
+      <p>Harga: Rp 20.000</p>
       <button onclick="pilihPaket('VIP')">Pilih Paket Ini</button>
     </div>
   </div>
 </section>
 
+<!-- ✅ POPUP BUKTI PEMBAYARAN -->
+<div id="buktiPembayaranPopup" class="bukti-pembayaran-popup">
+    <div class="bukti-pembayaran-content">
+        <!-- Header -->
+        <div class="bukti-header">
+            <h3>m-Transfer</h3>
+            <div class="bank-name">Photo Booth</div>
+        </div>
+        
+        <!-- Body -->
+        <div class="bukti-body">
+            <div class="status-berhasil">BERHASIL</div>
+            
+            <div class="detail-transaksi">
+                <div class="detail-item">
+                    <span class="label">Tanggal/Waktu</span>
+                    <span class="value" id="buktiTanggal">11/11/2025 19:35:15</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">No. Referensi</span>
+                    <span class="value" id="buktiReferensi">9503120251111935144178648B87</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Metode</span>
+                    <span class="value" id="buktiMetode">GOPAY</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Jenis Paket</span>
+                    <span class="value" id="buktiJenisPaket">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Nama Penyewa</span>
+                    <span class="value" id="buktiNama">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Email</span>
+                    <span class="value" id="buktiEmail">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">No. HP</span>
+                    <span class="value" id="buktiNoHP">-</span>
+                </div>
+            </div>
+            
+            <div class="detail-item" style="margin-top: 15px;">
+                <span class="label">TOTAL TAGIHAN</span>
+                <span class="value" style="color: #004b8d; font-size: 1.1em;" id="buktiTotal">Rp 0</span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px; font-size: 0.8em; color: #666;">
+                Biaya Termasuk PPN (Bila ada)<br>
+                PT. PHOTO BOOTH KELOMPOK 3<br>
+                NPWP : 0013084496091000
+            </div>
+        </div>
+        
+        <!-- Footer dengan Tombol -->
+        <div class="bukti-footer">
+            <button class="btn-download" onclick="downloadBuktiPembayaran()">
+                ⬇ Download Struk
+            </button>
+            <button class="btn-oke" onclick="tutupBuktiPembayaran()">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ TAMBAHKAN HTML UNTUK MODAL PETUNJUK -->
+<div id="petunjukModal" class="modal-popup">
+    <div class="modal-content" style="max-width: 800px; max-height: 80vh;">
+        <div class="modal-header">
+            <h2>📖 Petunjuk Penggunaan Photo Booth</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="panduan-cepat">🚀 Panduan Cepat</button>
+                <button class="tab-button" data-tab="cara-pakai">🎥 Cara Pakai</button>
+                <button class="tab-button" data-tab="paket-harga">💰 Paket & Harga</button>
+                <button class="tab-button" data-tab="faq">❓ FAQ</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="panduan-cepat" class="tab-pane active">
+                    <h3>Langkah-Langkah Cepat:</h3>
+                    <ol>
+                        <li>🔐 <strong>Login/Register</strong> - Buat akun atau masuk</li>
+                        <li>📦 <strong>Pilih Paket</strong> - Trial, Basic, Premium, atau VIP</li>
+                        <li>💳 <strong>Bayar</strong> - Untuk paket berbayar (Trial gratis)</li>
+                        <li>🎥 <strong>Photo Booth</strong> - Ambil foto & video</li>
+                        <li>📥 <strong>Download</strong> - Simpan hasil ke device</li>
+                    </ol>
+                </div>
+                
+                <div id="cara-pakai" class="tab-pane">
+                    <h3>🎥 Cara Menggunakan Photo Booth:</h3>
+                    <div class="feature-guide">
+                        <div class="guide-item">
+                            <h4>📸 Ambil Foto</h4>
+                            <p>Klik tombol <strong>"Ambil Foto"</strong> - Bisa pakai timer 3, 5, atau 10 detik</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🎥 Rekam Video</h4>
+                            <p>Klik tombol <strong>"Video"</strong> - Lalu ⏺ untuk mulai rekam, ⏹ untuk stop</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🎨 Filter & Frame</h4>
+                            <p>Pilih filter dan frame dari panel kanan untuk efek khusus</p>
+                        </div>
+                        <div class="guide-item">
+                            <h4>🖼 Lihat Hasil</h4>
+                            <p>Klik thumbnail di gallery untuk preview di layar utama</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="paket-harga" class="tab-pane">
+                    <h3>💰 Pilihan Paket:</h3>
+                    <div class="package-comparison">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fitur</th>
+                                    <th>🎯 Trial</th>
+                                    <th>📸 Basic</th>
+                                    <th>🌟 Premium</th>
+                                    <th>👑 VIP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Durasi</td>
+                                    <td>10 menit</td>
+                                    <td>1 jam</td>
+                                    <td>2 jam</td>
+                                    <td>3 jam</td>
+                                </tr>
+                                <tr>
+                                    <td>Foto</td>
+                                    <td>3</td>
+                                    <td>10</td>
+                                    <td>20</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>Video</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>5</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>Harga</td>
+                                    <td>GRATIS</td>
+                                    <td>Rp 10.000</td>
+                                    <td>Rp 15.000</td>
+                                    <td>Rp 20.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="faq" class="tab-pane">
+                    <h3>❓ Pertanyaan Umum:</h3>
+                    <div class="faq-item">
+                        <h4>Q: Apakah Trial benar-benar gratis?</h4>
+                        <p>A: Ya! Trial gratis dengan 3 foto + 1 video, sekali pakai per akun.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Bagaimana cara download hasil?</h4>
+                        <p>A: Klik tombol 📥 Download Hasil di bagian bawah photo booth.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Hasil foto/video tersimpan di mana?</h4>
+                        <p>A: Tersimpan di akun Anda, aman walaupun logout/refresh.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4>Q: Bisa pakai di mobile?</h4>
+                        <p>A: Bisa! Aplikasi responsive untuk desktop & mobile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-oke" onclick="tutupPetunjuk()">Mengerti</button>
+        </div>
+    </div>
+</div>
+
 <script>
+
+// ✅ LUXURY PARTICLE SYSTEM
+function createLuxuryParticles() {
+    const container = document.getElementById('luxury-particles');
+    if (!container) return;
+    
+    const colors = ['#667eea', '#4ECDC4', '#74ebd5', '#9face6', '#FFD700', '#ffffff'];
+    const shapes = ['circle', 'square', 'triangle'];
+    
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 25 + 8;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        
+        particle.style.cssText = `
+            position: absolute;
+            background: ${color};
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: ${shape === 'circle' ? '50%' : shape === 'triangle' ? '0' : '4px'};
+            opacity: ${Math.random() * 0.3 + 0.1};
+            left: ${Math.random() * 100}vw;
+            top: ${Math.random() * 100}vh;
+            animation: float-luxury ${Math.random() * 15 + 10}s infinite ease-in-out;
+            animation-delay: ${Math.random() * 5}s;
+            filter: blur(${Math.random() * 3 + 1}px);
+            transform: rotate(${Math.random() * 360}deg);
+            ${shape === 'triangle' ? 'clip-path: polygon(50% 0%, 0% 100%, 100% 100%);' : ''}
+        `;
+        
+        container.appendChild(particle);
+    }
+}
+
+// ✅ LUXURY THEME INITIALIZATION
+function initLuxuryTheme() {
+    console.log("💎 Initializing Blue & Mint Luxury Theme...");
+    
+    createLuxuryParticles();
+    updateGlobalUserStatus();
+    
+    // Enhanced hover effects
+    document.querySelectorAll('.glass-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Luxury click effects
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') {
+            const btn = e.target;
+            
+            // Ripple effect
+            const ripple = document.createElement('span');
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 1.5;
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+                transform: scale(0);
+                animation: luxury-ripple 0.8s ease-out;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                pointer-events: none;
+            `;
+            
+            btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 800);
+            
+            // Particle burst
+            createClickParticles(e.clientX, e.clientY);
+        }
+    });
+}
+
+// Luxury ripple animation
+const luxuryStyle = document.createElement('style');
+luxuryStyle.textContent = `
+    @keyframes luxury-ripple {
+        0% {
+            transform: scale(0);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes click-particle {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(var(--tx), var(--ty)) scale(0);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(luxuryStyle);
+
+function createClickParticles(x, y) {
+    const container = document.getElementById('luxury-particles');
+    const colors = ['#667eea', '#4ECDC4', '#FFD700'];
+    
+    for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 8 + 4;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const angle = (Math.PI * 2 * i) / 8;
+        const distance = Math.random() * 50 + 30;
+        
+        particle.style.cssText = `
+            position: fixed;
+            background: ${color};
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            left: ${x}px;
+            top: ${y}px;
+            --tx: ${Math.cos(angle) * distance}px;
+            --ty: ${Math.sin(angle) * distance}px;
+            animation: click-particle 0.6s ease-out forwards;
+            z-index: 10000;
+        `;
+        
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 600);
+    }
+}
+
+// Initialize when loaded
+document.addEventListener('DOMContentLoaded', initLuxuryTheme);
+
+
+
+// ✅ REGISTER SERVICE WORKER (tambahkan di awal file JavaScript)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js')
+      .then(registration => {
+        console.log('✅ ServiceWorker registration successful');
+      })
+      .catch(error => {
+        console.log('❌ ServiceWorker registration failed: ', error);
+      });
+  });
+}
 
 // Override dengan styling tema neon Anda
 window.alert = (msg) => Swal.fire({
@@ -724,6 +1846,194 @@ window.confirm = (msg) => Swal.fire({
         htmlContainer: 'custom-swal-text'
     }
 }).then(result => result.isConfirmed);
+
+// ✅ SISTEM PENYIMPANAN YANG ROBUST
+const STORAGE_KEYS = {
+    USER_DATA: 'photo_booth_user_data',
+    GALLERY_DATA: 'photo_booth_gallery_data',
+    SESSION: 'photo_booth_session'
+};
+
+// ✅ FUNGSI UTAMA UNTUK SIMPAN SEMUA DATA - VERSI PERBAIKI
+function saveAllData() {
+    try {
+        console.log("💾 MENYIMPAN SEMUA DATA...");
+        
+        const dataToSave = {
+            // ✅ DATA USER
+            currentUser: currentUser,
+            // ✅ GALLERY IMAGES (SANGAT PENTING!)
+            galleryImages: galleryImages,
+            // ✅ STATE APLIKASI
+            appState: {
+                paketActive: paketActive,
+                pembayaranVerified: pembayaranVerified,
+                paketDuration: paketDuration,
+                waktuSisa: waktuSisa,
+                currentIndex: currentIndex,
+                showingPhoto: showingPhoto,
+                isPreviewActive: isPreviewActive
+            },
+            // ✅ TIMESTAMP
+            lastSaved: new Date().toISOString(),
+            // ✅ VERSION
+            version: '3.0'
+        };
+
+        // ✅ SIMPAN KE MULTIPLE LOCATIONS UNTUK REDUNDANSI
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(dataToSave));
+        localStorage.setItem(STORAGE_KEYS.GALLERY_DATA, JSON.stringify(galleryImages));
+        
+        // ✅ SIMPAN DATA USER TERPISAH JIKA ADA
+        if (currentUser && currentUser.email) {
+            const userData = {
+                ...currentUser,
+                gallery: galleryImages, // ✅ PASTIKAN GALLERY IKUT DISIMPAN
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem(`user_${currentUser.email}`, JSON.stringify(userData));
+        }
+
+        console.log("💾 ALL DATA SAVED SUCCESSFULLY:", {
+            user: currentUser ? currentUser.email : 'none',
+            gallery: galleryImages.length,
+            photos: galleryImages.filter(item => item.type === 'photo').length,
+            videos: galleryImages.filter(item => item.type === 'video').length,
+            size: JSON.stringify(dataToSave).length + ' bytes'
+        });
+
+        return true;
+    } catch (error) {
+        console.error("❌ GAGAL SIMPAN DATA:", error);
+        
+        // ✅ COBA SIMPAN HANYA GALLERY SAJA JIKA FULL SAVE GAGAL
+        try {
+            if (galleryImages.length > 0) {
+                localStorage.setItem(STORAGE_KEYS.GALLERY_DATA, JSON.stringify(galleryImages));
+                console.log("🛟 Berhasil simpan gallery saja");
+            }
+        } catch (e) {
+            console.error("❌ Gagal simpan gallery backup:", e);
+        }
+        
+        return false;
+    }
+}
+
+// ✅ FUNGSI UTAMA UNTUK LOAD SEMUA DATA - VERSI PERBAIKI
+function loadAllData() {
+    try {
+        console.log("🔄 LOADING ALL DATA FROM LOCALSTORAGE...");
+        
+        // ✅ CEK SEMUA SUMBER DATA YANG MUNGKIN
+        const dataSources = [
+            STORAGE_KEYS.USER_DATA,
+            STORAGE_KEYS.GALLERY_DATA,
+            'currentUser' // backup source
+        ];
+        
+        let loadedData = null;
+        let sourceUsed = '';
+        
+        // ✅ COBA LOAD DARI SEMUA SUMBER (PRIORITAS TERTINGGI DULU)
+        for (let source of dataSources) {
+            const dataString = localStorage.getItem(source);
+            if (dataString) {
+                console.log(`✅ Data ditemukan di: ${source}`);
+                loadedData = JSON.parse(dataString);
+                sourceUsed = source;
+                break;
+            }
+        }
+        
+        if (!loadedData) {
+            console.log("➡ Tidak ada data tersimpan di localStorage");
+            return false;
+        }
+        
+        console.log(`📂 Menggunakan data dari: ${sourceUsed}`);
+        
+        // ✅ PROSES DATA YANG DILOAD
+        if (loadedData.currentUser) {
+            currentUser = loadedData.currentUser;
+            console.log("✅ User loaded:", currentUser.email);
+        } else if (loadedData.email) {
+            // JIKA loadedData ADALAH USER DATA LANGSUNG
+            currentUser = loadedData;
+            console.log("✅ User loaded (direct):", currentUser.email);
+        }
+        
+        // ✅ PROSES GALLERY IMAGES
+        if (loadedData.galleryImages && Array.isArray(loadedData.galleryImages)) {
+            galleryImages = loadedData.galleryImages;
+            console.log("✅ GalleryImages loaded:", galleryImages.length, "items");
+        } else if (Array.isArray(loadedData)) {
+            // JIKA loadedData ADALAH ARRAY GALLERY LANGSUNG
+            galleryImages = loadedData;
+            console.log("✅ Gallery array loaded:", galleryImages.length, "items");
+        } else if (loadedData.gallery && Array.isArray(loadedData.gallery)) {
+            // JIKA ADA DI PROPERTY GALLERY
+            galleryImages = loadedData.gallery;
+            console.log("✅ Gallery from property loaded:", galleryImages.length, "items");
+        }
+        
+        // ✅ VALIDASI galleryImages
+        if (!galleryImages || !Array.isArray(galleryImages)) {
+            console.log("⚠ GalleryImages tidak valid, reset ke array kosong");
+            galleryImages = [];
+        }
+        
+        // ✅ PROSES APP STATE
+        if (loadedData.appState) {
+            paketActive = loadedData.appState.paketActive || false;
+            pembayaranVerified = loadedData.appState.pembayaranVerified || false;
+            paketDuration = loadedData.appState.paketDuration || 0;
+            waktuSisa = loadedData.appState.waktuSisa || 0;
+            currentIndex = loadedData.appState.currentIndex || 0;
+            showingPhoto = loadedData.appState.showingPhoto || false;
+            isPreviewActive = loadedData.appState.isPreviewActive || false;
+            
+            console.log("✅ App state loaded");
+        }
+        
+        // ✅ CEK DATA USER DARI BACKUP JIKA PERLU
+        if (currentUser && currentUser.email) {
+            const userBackup = localStorage.getItem(`user_${currentUser.email}`);
+            if (userBackup) {
+                const backupData = JSON.parse(userBackup);
+                if (backupData.gallery && backupData.gallery.length > galleryImages.length) {
+                    console.log("🔄 Menggunakan gallery dari backup user (lebih lengkap)");
+                    galleryImages = backupData.gallery;
+                }
+            }
+        }
+        
+        console.log("🎯 Final loaded data:", {
+            user: currentUser ? currentUser.email : 'none',
+            galleryItems: galleryImages.length,
+            paketActive: paketActive,
+            waktuSisa: waktuSisa
+        });
+        
+        return true;
+        
+    } catch (error) {
+        console.error("❌ ERROR LOADING DATA:", error);
+        // ✅ RESET KE STATE AWAL JIKA ERROR
+        galleryImages = [];
+        currentUser = null;
+        paketActive = false;
+        pembayaranVerified = false;
+        return false;
+    }
+}
+
+// ✅ FUNGSI AUTO-SAVE SETIAP PERUBAHAN
+function autoSave() {
+    setTimeout(() => {
+        saveAllData();
+    }, 100);
+}
 
 // Fungsi untuk menampilkan section tertentu
 function showSection(sectionId) {
@@ -829,22 +2139,43 @@ let homeClickTimer = null;
 let sidebar = null;
 let hamburgerMenu = null;
 let isSidebarOpen = true;
-let pembayaranVerified = false; 
+let pembayaranVerified = false;
+let currentUser = null;
+let currentBuktiData = null;
+let menuHubungi = null;
+let paketFotoLimit = 0;
+let paketVideoLimit = 0;
+
 
 // ✅ INISIALISASI SIDEBAR
 function initSidebar() {
     sidebar = document.getElementById('sidebar');
     hamburgerMenu = document.getElementById('hamburger-menu');
+    menuHubungi = document.getElementById('menuHubungi'); // ✅ TAMBAH INI
     
     if (sidebar && hamburgerMenu) {
         console.log("✅ Sidebar dan hamburger menu berhasil diinisialisasi");
         updateSidebarState();
         hamburgerMenu.addEventListener('click', toggleSidebar);
         document.addEventListener('click', closeSidebarOnClickOutside);
+        
+        // ✅ TAMBAHKAN EVENT LISTENER UNTUK MENU HUBUNGI KAMI
+        if (menuHubungi) {
+            menuHubungi.addEventListener('click', function() {
+                console.log("🎯 Menu Hubungi Kami diklik!");
+                hubungiKami();
+                closeSidebar();
+            });
+            console.log("✅ Event listener Hubungi Kami berhasil dipasang");
+        } else {
+            console.error("❌ Element menuHubungi tidak ditemukan");
+        }
+        
     } else {
         console.error("❌ Element sidebar atau hamburger menu tidak ditemukan");
     }
 }
+
 
 // ✅ TOGGLE SIDEBAR
 function toggleSidebar(event) {
@@ -971,42 +2302,183 @@ function updateVideoTimer() {
 
   
 function addToGallery(item) {
-  const index = galleryImages.length;
-  galleryImages.push({ data: item, type: 'photo', frame: currentFrame }); // simpan frame saat foto diambil
+    const photoItem = {
+        id: 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        data: item,
+        type: 'photo',
+        frame: currentFrame,
+        timestamp: new Date().toISOString(),
+        storageType: 'base64'
+    };
 
-  const thumb = document.createElement('img');
-  thumb.className = "thumb";
-  thumb.src = item;
+    // ✅ SIMPAN KE galleryImages
+    galleryImages.push(photoItem);
+    
+    // ✅ BUAT THUMBNAIL
+    const thumb = document.createElement('img');
+    thumb.className = "thumb";
+    thumb.src = item;
+    thumb.setAttribute('data-id', photoItem.id);
+    thumb.onclick = () => {
+        currentIndex = galleryImages.length - 1;
+        showingPhoto = true;
+        showOnCamera(currentIndex);
+    };
+    gallery.appendChild(thumb);
 
-  // ketika diklik, tampilkan langsung di canvas di atas video
-  thumb.onclick = () => {
-    currentIndex = index;
-    showingPhoto = true;
-    showOnCamera(index); // tampilkan dengan frame yang tersimpan
-  };
+    // ✅ SIMPAN DATA USER
+    if (currentUser) {
+        if (!currentUser.gallery) currentUser.gallery = [];
+        currentUser.gallery.push(photoItem);
+        
+        // ✅ UPDATE COUNTER
+        currentUser.fotoTerambil = currentUser.gallery.filter(item => item.type === 'photo').length;
+        
+        // ✅ SIMPAN DATA
+        saveUserData();
+        
+        console.log(`✅ Foto disimpan: ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}`);
+    }
 
-  gallery.appendChild(thumb);
+    updatePackageCounter();
+    setTimeout(updateDownloadButtonPosition, 100);
 }
- 
-// Fungsi khusus untuk video  
+
+// ✅ FUNGSI addToGallery YANG BARU
+function addToGallery(item) {
+    const photoItem = {
+        id: 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        data: item,
+        type: 'photo',
+        frame: currentFrame,
+        timestamp: new Date().toISOString(),
+        storageType: 'base64'
+    };
+
+    // ✅ SIMPAN KE galleryImages
+    galleryImages.push(photoItem);
+    
+    // ✅ BUAT THUMBNAIL
+    const thumb = document.createElement('img');
+    thumb.className = "thumb";
+    thumb.src = item;
+    thumb.setAttribute('data-id', photoItem.id);
+    thumb.onclick = () => {
+        currentIndex = galleryImages.length - 1;
+        showingPhoto = true;
+        showOnCamera(currentIndex);
+    };
+    gallery.appendChild(thumb);
+
+    // ✅ UPDATE COUNTER DI USER DATA
+    if (currentUser) {
+        currentUser.fotoTerambil = galleryImages.filter(item => item.type === 'photo').length;
+        console.log(`✅ Foto ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}`);
+    }
+
+    // ✅ SIMPAN SEMUA DATA
+    saveAllData();
+    
+    updatePackageCounter();
+    setTimeout(updateDownloadButtonPosition, 100);
+}
+
+// ✅ FUNGSI addVideoToGallery YANG BARU
 function addVideoToGallery(videoURL) {
-  const index = galleryImages.length;
-  galleryImages.push({ data: videoURL, type: 'video', frame: currentFrame }); // simpan frame saat video
+    const videoItem = {
+        id: 'video_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        data: videoURL,
+        type: 'video',
+        frame: currentFrame,
+        timestamp: new Date().toISOString(),
+        storageType: 'base64'
+    };
 
-  const vid = document.createElement('video');
-  vid.src = videoURL;
-  vid.className = "thumb";
-  vid.muted = true;
-  vid.loop = true;
-  vid.autoplay = true;
+    // ✅ SIMPAN KE galleryImages
+    galleryImages.push(videoItem);
+    
+    // ✅ BUAT THUMBNAIL VIDEO (kode thumbnail tetap sama)
+    const videoContainer = document.createElement('div');
+    videoContainer.style.position = 'relative';
+    videoContainer.style.display = 'inline-block';
+    videoContainer.setAttribute('data-id', videoItem.id);
+    
+    const vid = document.createElement('video');
+    vid.src = videoURL;
+    vid.className = "thumb";
+    vid.muted = true;
+    vid.loop = true;
+    vid.autoplay = true;
+    vid.style.transform = "scaleX(1)";
+    vid.controls = false;
+    
+    const controlsOverlay = document.createElement('div');
+    controlsOverlay.style.position = 'absolute';
+    controlsOverlay.style.bottom = '5px';
+    controlsOverlay.style.left = '5px';
+    controlsOverlay.style.right = '5px';
+    controlsOverlay.style.background = 'rgba(0,0,0,0.7)';
+    controlsOverlay.style.borderRadius = '10px';
+    controlsOverlay.style.padding = '5px';
+    controlsOverlay.style.display = 'flex';
+    controlsOverlay.style.alignItems = 'center';
+    controlsOverlay.style.gap = '8px';
+    controlsOverlay.style.fontSize = '10px';
+    controlsOverlay.style.color = 'white';
+    
+    const playBtn = document.createElement('button');
+    playBtn.innerHTML = '▶';
+    playBtn.style.background = 'none';
+    playBtn.style.border = 'none';
+    playBtn.style.color = 'white';
+    playBtn.style.cursor = 'pointer';
+    playBtn.style.fontSize = '12px';
+    
+    const timeDisplay = document.createElement('span');
+    timeDisplay.textContent = '0:00';
+    
+    controlsOverlay.appendChild(playBtn);
+    controlsOverlay.appendChild(timeDisplay);
+    videoContainer.appendChild(vid);
+    videoContainer.appendChild(controlsOverlay);
+    
+    playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (vid.paused) {
+            vid.play();
+            playBtn.innerHTML = '❚❚';
+        } else {
+            vid.pause();
+            playBtn.innerHTML = '▶';
+        }
+    };
+    
+    vid.ontimeupdate = () => {
+        const minutes = Math.floor(vid.currentTime / 60);
+        const seconds = Math.floor(vid.currentTime % 60);
+        timeDisplay.textContent =`${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+    
+    videoContainer.onclick = () => {
+        currentIndex = galleryImages.length - 1;
+        showVideoOnCamera(videoURL, true);
+    };
+    
+    gallery.appendChild(videoContainer);
 
-  vid.onclick = () => {
-    currentIndex = index;
-    showVideoOnCamera(videoURL, true, galleryImages[index].frame); // kirim frame yang tersimpan
-  };
+    // ✅ UPDATE COUNTER DI USER DATA
+    if (currentUser) {
+        currentUser.videoTerambil = galleryImages.filter(item => item.type === 'video').length;
+        console.log(`✅ Video ${currentUser.videoTerambil}/${currentUser.paketVideoLimit}`);
+    }
 
-  gallery.appendChild(vid);
+    // ✅ SIMPAN SEMUA DATA
+    saveAllData();
+    
+    updatePackageCounter();
+    setTimeout(updateDownloadButtonPosition, 100);
 }
+
 // 🔊 Bunyi timer  
 function playBeep() {  
   if (!audioEnabled) return;  
@@ -1029,63 +2501,175 @@ function playShutter() {
   shutterSound.play().catch(err => console.warn("Gagal memutar suara jepret:", err));  
 }  
   
-// 🎥 Nyalakan kamera  
-async function startCamera() {  
-  try {  
-    document.getElementById('camera-container').style.display = 'inline-block';  
-    stream = await navigator.mediaDevices.getUserMedia({ video: { width: 480, height: 360 }, audio: false });
-    video.srcObject = stream;  
-    video.style.display = 'block';  
-    canvas.style.display = 'none';  
-    if (currentFrame !== "") frameOverlay.style.display = 'block';  
-    audioEnabled = true;  
-    showingPhoto = false;  
+//  Nyalakan kamera dengan resolusi tinggi
+async function startCamera() {
+    try {
+      
+        const constraints = {
+            video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: 'user'
+            },
+            audio: false
+        };
+
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = stream;
+        video.style.display = 'block'; //  TAMPILKAN VIDEO
+        canvas.style.display = 'none';
+
+        //  SET CANVAS RESOLUTION TINGGI
+        canvas.width = 1280;
+        canvas.height = 720;
+
+        if (currentFrame !== "") {
+            frameOverlay.style.display = 'block';
+            frameOverlay.style.transform = "scaleX(-1)";
+        }
+        audioEnabled = true;
+        showingPhoto = false;
+
+        // Terapkan filter yang dipilih
+        video.style.filter = filterSelect.value || "none";
+
+        // Sembunyikan kontrol video jika sebelumnya muncul
+        videoControlsContainer.style.display = 'none';
+        
+        console.log("  Kamera berhasil dinyalakan");
+    } catch (err) {
+        alert("Tidak dapat mengakses kamera: " + err);
+    }
+}
+
+//  Matikan kamera dengan sempurna
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+
+    // Matikan tampilan kamera TAPI JANGAN SEMBUNYIKAN CONTAINER
+    video.srcObject = null;
+    video.src = "";
+    video.pause();
+    video.style.display = 'none'; //  SEMBUNYIKAN VIDEO SAJA
+
+    // Sembunyikan elemen kamera TAPI CONTAINER TETAP TAMPIL
+    canvas.style.display = 'none';
+    frameOverlay.style.display = 'none';
+    videoControlsContainer.style.display = 'none';
+    videoTimerEl.style.display = 'none';
+    stopVideoTimer();
+
+    // Tampilkan kembali galeri hasil
+    gallery.style.display = 'flex';
+    
+    //  JANGAN SEMBUNYIKAN camera-container!
+    // Biarkan container tetap tampil dalam keadaan "mati"
+    
+    // Sembunyikan tombol kontrol video
+    startRecBtn.style.display = 'none';
+    pauseRecBtn.style.display = 'none';
+    stopRecBtn.style.display = 'none';
+    if (typeof resumeRecBtn !== 'undefined')
+        resumeRecBtn.style.display = 'none';
+
+    console.log("  Kamera dimatikan, container tetap tampil");
+}
+
+function showCameraContainer() {
+    const cameraContainer = document.getElementById('camera-container');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    
+    if (cameraContainer) {
+        cameraContainer.style.display = 'inline-block';
+        console.log("  Container kamera ditampilkan (dalam keadaan mati)");
+    }
+    
+    // Pastikan video dan canvas disembunyikan awalnya
+    if (video) {
+        video.style.display = 'none';
+        video.srcObject = null;
+    }
+    if (canvas) {
+        canvas.style.display = 'none';
+    }
+    
+    // Sembunyikan kontrol video
+    const videoControlsContainer = document.getElementById('videoControls');
+    if (videoControlsContainer) {
+        videoControlsContainer.style.display = 'none';
+    }
+    
+    // Sembunyikan countdown dan timer
+    const countdown = document.getElementById('countdown');
+    const videoTimer = document.getElementById('videoTimer');
+    if (countdown) countdown.style.display = 'none';
+    if (videoTimer) videoTimer.style.display = 'none';
+    
+    // Tampilkan frame overlay jika ada frame yang dipilih
+    const frameOverlay = document.getElementById('frame-overlay');
+    if (frameOverlay && currentFrame !== "") {
+        frameOverlay.style.display = 'block';
+        frameOverlay.src = currentFrame;
+    } else if (frameOverlay) {
+        frameOverlay.style.display = 'none';
+    }
+    
+    // Reset state
+    showingPhoto = false;
+    isPreviewActive = false;
+    
+    // Tampilkan gallery
+    const gallery = document.getElementById('gallery');
+    if (gallery) {
+        gallery.style.display = 'flex';
+    }
+}
   
-    // Sembunyikan kontrol video jika sebelumnya muncul  
-    videoControlsContainer.style.display = 'none';  
-  } catch (err) {  
-    alert("Tidak dapat mengakses kamera: " + err);  
-  }  
-}  
-  
-// ⏹ Matikan kamera dengan sempurna  
-function stopCamera() {  
-  if (stream) {  
-    stream.getTracks().forEach(track => track.stop());  
-    stream = null;  
-  }  
-  
-  // Matikan tampilan kamera  
-  video.srcObject = null;  
-  video.src = "";  
-  video.pause();  
-  video.style.display = 'none';  
-  
-  // Sembunyikan semua elemen kamera  
-  canvas.style.display = 'none';  
-  frameOverlay.style.display = 'none';  
-  videoControlsContainer.style.display = 'none';  
-  videoTimerEl.style.display = 'none';  
-  stopVideoTimer();  
-  
-  // Tampilkan kembali galeri hasil  
-  gallery.style.display = 'flex';  
-  
-  // Sembunyikan tombol kontrol video  
-  startRecBtn.style.display = 'none';  
-  pauseRecBtn.style.display = 'none';  
-  stopRecBtn.style.display = 'none';  
-  if (typeof resumeRecBtn !== 'undefined')  
-    resumeRecBtn.style.display = 'none';  
-  
-  console.log("🔴 Kamera dimatikan sepenuhnya.");  
-}  
-  
-// 📸 Ambil foto                                                                                 capture
 function capturePhoto() {
+    // ✅ VALIDASI LIMIT DENGAN DATA YANG KONSISTEN
+    if (currentUser && currentUser.paket) {
+        // PASTIKAN COUNTER SESUAI DENGAN GALLERY
+        syncCountersWithGallery();
+        
+        if (currentUser.fotoTerambil >= currentUser.paketFotoLimit) {
+            let pesan = "";
+            if (currentUser.paket === "Trial") {
+                pesan = 'Upgrade ke paket berbayar untuk foto unlimited!';
+            } else if (currentUser.paket === "VIP") {
+                pesan = 'Paket VIP Anda sudah mencapai batas foto.';
+            } else {
+                pesan = 'Anda sudah mencapai batas foto untuk paket ' + currentUser.paket;
+            }
+            
+            Swal.fire({
+                title: '⚠ Limit Foto Habis',
+                html: `
+                <div style="text-align: left; margin: 15px 0;">
+                    <p><strong>Anda sudah mencapai batas foto untuk paket ${currentUser.paket}!</strong></p>
+                    <p>📸 <strong>${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}</strong> foto sudah diambil</p>
+                    <p>⏰ Sisa waktu: <strong>${formatTime(currentUser.waktuSisa)}</strong></p>
+                    <br>
+                    <p><em>${pesan}</em></p>
+                </div>
+                `,
+                icon: 'warning',
+                confirmButtonText: 'Mengerti',
+                background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+                color: '#ffffff',
+                confirmButtonColor: '#ff416c',
+                width: '450px'
+            });
+            return;
+        }
+    }
+
     const ctx = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
 
     ctx.save();
 
@@ -1102,16 +2686,41 @@ function capturePhoto() {
     playShutter();
 
     const finalizeCapture = (imageData) => {
-        // ✅ Set data foto dan flag siap simpan
-        lastCapturedData = imageData;
-        fotoSiap = true;
+    // Set data foto dan flag siap simpan
+    lastCapturedData = imageData;
+    fotoSiap = true;
+    console.log(" ✅ Foto diambil, data tersimpan:", !!lastCapturedData);
+
+    // ✅ LANGSUNG SIMPAN KE GALLERY DENGAN ID UNIK
+    addToGallery(imageData);
+
+    // UPDATE COUNTER FOTO UNTUK SEMUA PAKET
+    if (currentUser && currentUser.paket) {
+        currentUser.fotoTerambil++;
         
-        console.log("📸 Foto diambil, data tersimpan:", !!lastCapturedData);
-        console.log("📏 Ukuran data:", lastCapturedData.length);
+        // ✅ SIMPAN PERUBAHAN COUNTER
+        try {
+            localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        } catch (e) {
+            console.error(" ❌ Gagal menyimpan counter:", e);
+            cleanupLocalStorage();
+        }
 
-        addToGallery(imageData);
-
-        canvas.style.display = 'block';
+        console.log(` ✅ Progress ${currentUser.paket}: ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit} foto`);
+        
+        // ✅ TAMPILKAN NOTIFIKASI PROGRESS
+        if (currentUser.fotoTerambil === currentUser.paketFotoLimit) {
+            if (currentUser.paket === "VIP") {
+                showFeedback(" 🎉 Batas foto VIP tercapai!");
+            } else {
+                showFeedback(" ⚠ Foto terpakai!");
+            }
+        } else {
+            showFeedback(` 📸 Foto ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}`);
+        }
+    }
+   canvas.style.display = 'block';
 
         if (currentFrame !== "") {
             frameOverlay.style.display = 'block';
@@ -1187,49 +2796,35 @@ function showOnCamera(index) {
 }
   
 function showVideoOnCamera(url, isPreview = false) {  
-  video.pause();  
-  video.srcObject = null;      
-  video.src = url;  
-  video.controls = true;  
-  video.autoplay = true;  
-  video.muted = false;  
-  video.loop = false;  
-  video.style.display = 'block';  
-  canvas.style.display = 'none';  
-  frameOverlay.style.display = 'none';  
+    video.pause();  
+    video.srcObject = null;      
+    video.src = url;  
+    video.controls = true;  // ✅ TAMPILKAN KONTROL DEFAULT
+    video.autoplay = true;  
+    video.muted = false;  
+    video.loop = false;  
+    video.style.display = 'block';  
+    video.style.transform = "scaleX(1)"; // ✅ VIDEO NORMAL (TIDAK MIRROR)
+    canvas.style.display = 'none';  
+    frameOverlay.style.display = 'none';  
 
-  // ✅ Gunakan pembungkus agar hanya tampilan video yang mirror, bukan kontrolnya
-  let videoWrapper = document.getElementById('videoWrapper');
-  if (!videoWrapper) {
-    // Buat pembungkus secara otomatis kalau belum ada
-    videoWrapper = document.createElement('div');
-    videoWrapper.id = 'videoWrapper';
-    video.parentNode.insertBefore(videoWrapper, video);
-    videoWrapper.appendChild(video);
-    videoWrapper.style.position = "relative";
-    videoWrapper.style.display = "inline-block";
-    videoWrapper.style.transformOrigin = "center";
-  }
+    // ✅ HAPUS WRAPPER YANG MEMBUAT KONTROL TERBALIK
+    let videoWrapper = document.getElementById('videoWrapper');
+    if (videoWrapper) {
+        videoWrapper.style.transform = "none"; // ✅ HAPUS TRANSFORM
+        videoWrapper.remove(); // ✅ HAPUS WRAPPER SAMA SEKALI
+    }
 
-  // Reset transformasi agar aman
-  video.style.transform = "scaleX(1)";
-  videoWrapper.style.transform = "none";
+    if (isPreview) {  
+        videoControlsContainer.style.display = 'none';  
+        stopVideoTimer();  
+    } else {  
+        videoControlsContainer.style.display = 'flex';  
+        startVideoTimer();  
+    }  
 
-  if (isPreview) {
-    // ✅ Video hasil rekaman: tampil NORMAL (tidak mirror) tapi kontrol tetap benar
-    videoWrapper.style.transform = "scaleX(-1)";
-  } else {
-    // 🎥 Live camera atau saat rekam video: tetap mirroring
-    videoWrapper.style.transform = "scaleX(-1)";
-  }
-
-  if (isPreview) {  
-    videoControlsContainer.style.display = 'none';  
-    stopVideoTimer();  
-  } else {  
-    videoControlsContainer.style.display = 'flex';  
-    startVideoTimer();  
-  }  
+    showingPhoto = false;
+    isPreviewActive = isPreview;
 }
 
 function showNext(event) {  
@@ -1241,37 +2836,68 @@ function showNext(event) {
 }  
   
 // 🔹 Tombol kontrol video di dalam kamera  
-videoBtn.onclick = async () => {  
-  if (!stream) {  
-    showCameraAlert("🎥 Nyalakan kamera terlebih dahulu!");  
-    return;  
-  }  
-  
-  // 1️⃣ Pastikan kamera aktif kembali  
-  await startCamera();  
-  
-canvas.style.display = 'none';
-// frameOverlay.style.display = 'none';
-video.controls = false;
-showingPhoto = false;
+videoBtn.onclick = async () => {
+    if (!stream) {
+        showCameraAlert("  Nyalakan kamera terlebih dahulu!");
+        return;
+    }
 
-// Jangan sembunyikan frame jika ada yang dipilih
-if(currentFrame !== "") {
-  frameOverlay.style.display = 'block';
-} else {
-  frameOverlay.style.display = 'none';
-}
-  // 3️⃣ Tampilkan kontrol untuk perekaman video baru  
-  videoControlsContainer.style.display = 'flex';  
-  startRecBtn.style.display = 'inline-block';  
-  stopRecBtn.style.display = 'none';  
-  pauseRecBtn.style.display = 'none';  
-  
-  // 4️⃣ Sembunyikan timer video sampai mulai rekam  
-  stopVideoTimer();  
-};  
+    await startCamera(); // Pastikan kamera aktif
 
-startRecBtn.onclick = async () => {
+    canvas.style.display = 'none';
+    video.controls = false; //  SEMBUNYIKAN KONTROL SAAT MODE KAMERA
+    showingPhoto = false;
+
+    //  VIDEO LIVE: GUNAKAN MIRROR EFFECT
+    video.style.transform = "scaleX(-1)";
+    if(currentFrame !== "") {
+        frameOverlay.style.display = 'block';
+        frameOverlay.style.transform = "scaleX(-1)";
+    } else {
+        frameOverlay.style.display = 'none';
+    }
+
+    videoControlsContainer.style.display = 'flex';
+    startRecBtn.style.display = 'inline-block';
+    stopRecBtn.style.display = 'none';
+    pauseRecBtn.style.display = 'none';
+    stopVideoTimer();
+};
+
+async function startRecording() {
+  // ✅ CEK LIMIT VIDEO UNTUK SEMUA PAKET
+  if (currentUser && currentUser.paket) {
+      if (currentUser.videoTerambil >= currentUser.paketVideoLimit) {
+          let pesan = '';
+          if (currentUser.paket === "Trial") {
+              pesan = 'Upgrade ke paket berbayar untuk lebih banyak video!';
+          } else if (currentUser.paket === "VIP") {
+              pesan = 'Paket VIP Anda sudah mencapai batas video.';
+          } else {
+              pesan = 'Anda sudah mencapai batas video untuk paket ' + currentUser.paket;
+          }
+          
+          Swal.fire({
+              title: '❌ Limit Video Habis',
+              html: `
+                  <div style="text-align: left; margin: 15px 0;">
+                      <p><strong>Anda sudah mencapai batas video untuk paket ${currentUser.paket}!</strong></p>
+                      <p>🎥 <strong>${currentUser.videoTerambil}/${currentUser.paketVideoLimit}</strong> video sudah diambil</p>
+                      <br>
+                      <p>💡 <em>${pesan}</em></p>
+                  </div>
+              `,
+              icon: 'warning',
+              confirmButtonText: 'Mengerti',
+              background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+              color: '#ffffff',
+              confirmButtonColor: '#ff416c',
+              width: '450px'
+          });
+          return;
+      }
+  }
+
   if (!stream) return;
 
   recordedChunks = [];
@@ -1289,24 +2915,16 @@ startRecBtn.onclick = async () => {
   recordingCanvas.height = video.videoHeight;
   const rctx = recordingCanvas.getContext('2d');
 
-  // 🔹 Tambahan baru: ambil filter yang sedang dipilih
   const filterValue = filterSelect.value || "none";
-
-  // 🔹 Variabel untuk tracking frame yang sedang dipakai
   let frameImage = null;
   let lastFrameSrc = "";
 
   const drawFrame = () => {
     if (!stream) return;
     rctx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
-
-    // Terapkan filter ke setiap frame video
     rctx.filter = filterValue;
-
-    // Gambar video
     rctx.drawImage(video, 0, 0, recordingCanvas.width, recordingCanvas.height);
 
-    // 🔹 Update frame overlay jika dipakai
     if (currentFrame && currentFrame !== lastFrameSrc) {
       frameImage = new Image();
       frameImage.src = currentFrame;
@@ -1315,7 +2933,6 @@ startRecBtn.onclick = async () => {
         rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
       };
     } else if (frameImage) {
-      // Gambar frameImage yang sudah ada
       rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
     }
 
@@ -1323,24 +2940,95 @@ startRecBtn.onclick = async () => {
   };
   drawFrame();
 
-  // 🔹 Ambil video dari canvas (sudah termasuk filter)
   const canvasStream = recordingCanvas.captureStream(30);
   const combinedStream = audioStream
     ? new MediaStream([...canvasStream.getVideoTracks(), ...audioStream.getAudioTracks()])
     : canvasStream;
 
-  // 🔹 Rekam hasil stream berfilter
-  mediaRecorder = new MediaRecorder(combinedStream);
+  // ✅ SET DURASI REKAMAN MAX 30 DETIK UNTUK HINDARI FILE BESAR
+  mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm; codecs=vp9' });
+  
   mediaRecorder.ondataavailable = e => {
     if (e.data.size > 0) recordedChunks.push(e.data);
   };
 
-  mediaRecorder.onstop = () => {
+  mediaRecorder.onstop = async () => {
     const blob = new Blob(recordedChunks, { type: "video/webm" });
-    const url = URL.createObjectURL(blob);
-    addVideoToGallery(url);
+    
+    // ✅ CEK UKURAN FILE - JIKA KECIL (< 5MB) SIMPAN SEBAGAI BASE64, JIKA BESAR BLOB URL
+    let videoData;
+    let storageType = 'blob';
+    
+    if (blob.size < 5 * 1024 * 1024) { // 5MB
+      try {
+        videoData = await blobToBase64(blob);
+        storageType = 'base64';
+        console.log("✅ Video disimpan sebagai Base64 (size:", blob.size, "bytes)");
+      } catch (e) {
+        console.warn("❌ Gagal konversi ke Base64, gunakan Blob URL");
+        videoData = URL.createObjectURL(blob);
+      }
+    } else {
+      videoData = URL.createObjectURL(blob);
+      console.log("✅ Video disimpan sebagai Blob URL (size:", blob.size, "bytes)");
+    }
+    
+    // ✅ TAMPILKAN VIDEO DI GALLERY
+    addVideoToGallery(videoData);
+    
+    // ✅ UPDATE COUNTER & SIMPAN KE USER DATA
+    if (currentUser && currentUser.paket) {
+        currentUser.videoTerambil++;
+        
+        if (!currentUser.gallery) currentUser.gallery = [];
+        
+        // ✅ SIMPAN DENGAN INDIKATOR STORAGE TYPE
+        const videoItem = {
+            data: videoData,
+            type: 'video',
+            frame: currentFrame,
+            timestamp: new Date().toISOString(),
+            storageType: storageType,
+            size: blob.size
+        };
+        
+        currentUser.gallery.push(videoItem);
+        
+        // ✅ CLEANUP GALLERY JIKA TERLALU BANYAK
+        if (currentUser.gallery.length > 10) {
+            currentUser.gallery = currentUser.gallery.slice(-10);
+            console.log("🧹 Gallery dibersihkan, simpan 10 item terbaru");
+        }
+        
+        try {
+            localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            console.log("💾 Video disimpan ke localStorage");
+        } catch (e) {
+            console.warn("❌ Gagal simpan ke localStorage:", e.message);
+            cleanupLocalStorage();
+        }
+        
+        console.log(`📊 Progress ${currentUser.paket}: ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} video`);
+        updatePackageCounter();
+        
+        if (currentUser.videoTerambil >= currentUser.paketVideoLimit) {
+            showFeedback("🎯 Batas video tercapai!");
+        } else {
+            showFeedback(`🎥 Video ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} direkam`);
+        }
+    }
+    
     stopVideoTimer();
   };
+
+  // ✅ AUTO STOP SETELAH 30 DETIK UNTUK HINDARI FILE BESAR
+  setTimeout(() => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      showFeedback("⏰ Rekaman dihentikan otomatis (max 30 detik)");
+    }
+  }, 30000);
 
   mediaRecorder.start();
 
@@ -1348,36 +3036,11 @@ startRecBtn.onclick = async () => {
   pauseRecBtn.style.display = 'inline-block';
   stopRecBtn.style.display = 'inline-block';
   startVideoTimer();
-};
+}
 
-pauseRecBtn.onclick = () => {  
+function stopRecording() {  
   if (!mediaRecorder) return;  
-  if (mediaRecorder.state === 'recording') {  
-    mediaRecorder.pause();  
-    pauseVideoTimer(); // hentikan timer saat pause  
-    pauseRecBtn.style.display = 'none';  
-    resumeRecBtn.style.display = 'inline-block'; // munculkan tombol resume  
-  }  
-};  
-  
-resumeRecBtn.onclick = () => {  
-  if (!mediaRecorder) return;  
-  if (mediaRecorder.state === 'paused') {  
-    mediaRecorder.resume();  
-    resumeRecBtn.style.display = 'none';  
-    pauseRecBtn.style.display = 'inline-block'; // tampilkan pause lagi  
-    resumeVideoTimer(); // lanjutkan timer saat resume
-  }  
-};
-stopRecBtn.onclick = () => {  
-  if (!mediaRecorder) return;  
-  mediaRecorder.stop();  
-  mediaRecorder.onstop = () => {  
-    const blob = new Blob(recordedChunks, { type: "video/webm" });  
-    const url = URL.createObjectURL(blob);  
-    addVideoToGallery(url);  
-    stopVideoTimer(); // hentikan timer saat stop  
-  };  
+  mediaRecorder.stop();
   
   // Setelah stop, tampilkan hanya tombol start lagi  
   startRecBtn.style.display = 'inline-block';  
@@ -1386,7 +3049,28 @@ stopRecBtn.onclick = () => {
   if (typeof resumeRecBtn !== 'undefined')  
     resumeRecBtn.style.display = 'none';  
   videoControlsContainer.style.display = 'none';  
-};  
+}
+
+function pauseRecording() {  
+  if (!mediaRecorder) return;  
+  if (mediaRecorder.state === 'recording') {  
+    mediaRecorder.pause();  
+    pauseVideoTimer();  
+    pauseRecBtn.style.display = 'none';  
+    resumeRecBtn.style.display = 'inline-block';  
+  }  
+}
+
+function resumeRecording() {  
+  if (!mediaRecorder) return;  
+  if (mediaRecorder.state === 'paused') {  
+    mediaRecorder.resume();  
+    resumeRecBtn.style.display = 'none';  
+    pauseRecBtn.style.display = 'inline-block';  
+    resumeVideoTimer();
+  }  
+}
+
 // 🎬 Tombol kontrol utama  
 startBtn.onclick = startCamera;  
 stopBtn.onclick = stopCamera;  
@@ -1466,11 +3150,26 @@ function handleCapture() {
     }  
   }, 1000);  
 }  
+
+// ✅ TAMBAHKAN FUNGSI showCameraAlert() JIKA BELUM ADA
+function showCameraAlert(message = "🎥 Nyalakan kamera terlebih dahulu!") {
+    Swal.fire({
+        title: '⚠ Kamera Tidak Aktif',
+        text: message,
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#ff416c',
+        width: '400px'
+    });
+}
+
 // === DASHBOARD HANDLER ===                                          yhkkl';l'''''''''''''''''''''''''''''''''''
 function showSection(section) {
-    console.log("🔄 Menampilkan section:", section);
-    
-    // Sembunyikan semua section utama
+    console.log("🔘 Menampilkan section:", section);
+
+    // ✅ SEMBUNYIKAN SEMUA SECTION UTAMA
     const sectionsToHide = ["dashboard", "photobooth-section", "pembayaran-section", "paket-section"];
     sectionsToHide.forEach(id => {
         const element = document.getElementById(id);
@@ -1479,50 +3178,201 @@ function showSection(section) {
             console.log("❌ Sembunyikan:", id);
         }
     });
-    
-    // Tampilkan section yang dipilih
+
+    // ✅ SEMBUNYIKAN SEMUA CONTENT SECTION SIDEBAR
+    const sections = document.querySelectorAll(".contentSection");
+    sections.forEach(sec => {
+        sec.style.display = "none";
+        console.log("❌ Sembunyikan sidebar section:", sec.id);
+    });
+
+    // ✅ TAMPILKAN SECTION YANG DIPILIH
     if (section === "dashboard") {
         document.getElementById("dashboard").style.display = "block";
         console.log("✅ Tampilkan: dashboard");
-    } 
-    else if (section === "photobooth") {
-        // ✅ CEK: Harus sudah pilih paket DAN sudah bayar
-        if (!paketDuration) {
-            alert("Silakan pilih paket terlebih dahulu di Menu Paket.");
+        
+        // ✅ UPDATE STATUS DASHBOARD
+        updateDashboardStatus();
+        
+    } else if (section === "photobooth") {
+        console.log("🎬 MENUJU PHOTOBOOTH SECTION");
+        
+        // ✅ CEK: HARUS SUDAH LOGIN
+        if (!currentUser) {
+            console.log("❌ User belum login, tampilkan login menu");
+            showLoginMenu();
             document.getElementById("dashboard").style.display = "block";
             return;
         }
-        if (!pembayaranVerified) {
-            alert("Silakan lakukan pembayaran terlebih dahulu di Menu Pembayaran.");
+
+        // ✅ TAMPILKAN INFO DATA SEBELUM MASUK
+        console.log("📊 Data sebelum masuk photobooth:", {
+            user: currentUser.email,
+            paket: currentUser.paket,
+            galleryItems: galleryImages ? galleryImages.length : 0,
+            fotoTerambil: currentUser.fotoTerambil || 0,
+            videoTerambil: currentUser.videoTerambil || 0,
+            waktuSisa: currentUser.waktuSisa || 0,
+            pembayaranVerified: currentUser.pembayaranVerified || false
+        });
+
+        // ✅ PASTIKAN GALLERY TERLOAD DENGAN BENAR
+        loadUserGallery();
+        
+        // ✅ TAMPILKAN INFO COUNTER UNTUK SEMUA PAKET
+        const trialInfo = document.getElementById('trialInfo');
+        if (trialInfo) {
+            if (currentUser.paket) {
+                trialInfo.style.display = 'block';
+                trialInfo.querySelector('h4').textContent = ` PAKET ${currentUser.paket.toUpperCase()}`;
+                updatePackageCounter();
+            } else {
+                trialInfo.style.display = 'none';
+            }
+        }
+
+        // ✅ VALIDASI PAKET DAN WAKTU
+        if (currentUser.paket === "Trial" && currentUser.waktuSisa > 0) {
+            // ✅ TRIAL AKTIF: LANGSUNG BISA PAKAI
+            document.getElementById("photobooth-section").style.display = "block";
+            console.log("✅ Tampilkan: photobooth-section (Trial aktif)");
+            showCameraContainer();
+            mulaiTimerPaket();
+            
+        } else if (currentUser.pembayaranVerified && currentUser.waktuSisa > 0) {
+            // ✅ SUDAH BAYAR: LANGSUNG BISA
+            document.getElementById("photobooth-section").style.display = "block";
+            console.log("✅ Tampilkan: photobooth-section (Sudah bayar)");
+            showCameraContainer();
+            mulaiTimerPaket();
+            
+        } else {
+            // ❌ BELUM BAYAR ATAU WAKTU HABIS
+            if (currentUser.paket === "Trial" && currentUser.waktuSisa <= 0) {
+                alert("⏰ Waktu trial Anda sudah habis! Silakan pilih paket berbayar.");
+            } else if (currentUser.paket && currentUser.paket !== "Trial") {
+                alert("⚠ Silakan lakukan pembayaran terlebih dahulu!");
+            } else {
+                alert("🔴 Silakan pilih paket terlebih dahulu di Menu Paket!");
+            }
             document.getElementById("dashboard").style.display = "block";
             return;
         }
-        document.getElementById("photobooth-section").style.display = "block";
-        console.log("✅ Tampilkan: photobooth-section");
-        mulaiTimerPaket();
-    } 
-    else if (section === "pembayaran") {
-        // ✅ CEK: Harus sudah pilih paket dulu
-        if (!paketDuration) {
-            alert("Silakan pilih paket terlebih dahulu di Menu Paket.");
+        
+        console.log("✅ PHOTOBOOTH SECTION BERHASIL DITAMPILKAN");
+
+    } else if (section === "pembayaran") {
+        console.log("💳 MENUJU PEMBAYARAN SECTION");
+        
+        // ✅ CEK: HARUS SUDAH LOGIN
+        if (!currentUser) {
+            console.log("❌ User belum login, tampilkan login menu");
+            showLoginMenu();
             document.getElementById("dashboard").style.display = "block";
             return;
         }
+
+        // ✅ CEK: SUDAH PILIH PAKET BAYAR (TRIAL TIDAK DIANGGAP)
+        if (!currentUser.paket || currentUser.paket === "Trial") {
+            alert("🔴 Silakan pilih paket berbayar terlebih dahulu di Menu Paket!");
+            document.getElementById("dashboard").style.display = "block";
+            return;
+        }
+
+        // ✅ CEK: SUDAH BAYAR ATAU BELUM?
+        if (currentUser.pembayaranVerified) {
+            alert("✅ Anda sudah memiliki paket aktif! Tidak perlu bayar lagi.");
+            document.getElementById("dashboard").style.display = "block";
+            return;
+        }
+
+        // ✅ TAMPILKAN SECTION PEMBAYARAN
         document.getElementById("pembayaran-section").style.display = "block";
         console.log("✅ Tampilkan: pembayaran-section");
-    } 
-    else if (section === "paket") {
+
+        // ✅ OTOMATIS ISI JENIS PAKET & HARGA BERDASARKAN PILIHAN USER
+        updateJenisPaketField();
+        
+        console.log("✅ PEMBAYARAN SECTION BERHASIL DITAMPILKAN");
+
+    } else if (section === "paket") {
+        console.log("📦 MENUJU PAKET SECTION");
+        
         document.getElementById("paket-section").style.display = "block";
         console.log("✅ Tampilkan: paket-section");
+        
+        console.log("✅ PAKET SECTION BERHASIL DITAMPILKAN");
+
+    } else {
+        // ✅ UNTUK SECTION SIDEBAR (filesContent, guideContent, aboutContent)
+        const targetSection = document.getElementById(section);
+        if (targetSection) {
+            targetSection.style.display = "block";
+            console.log("✅ Tampilkan sidebar section:", section);
+            console.log("📍 Posisi:", targetSection.getBoundingClientRect());
+            console.log("🎨 Style display:", window.getComputedStyle(targetSection).display);
+
+            // ✅ Force redraw untuk debug
+            targetSection.style.border = "3px solid #00ff00";
+            targetSection.style.background = "rgba(0,255,0,0.1)";
+            
+        } else {
+            console.error("❌ Section tidak ditemukan:", section);
+        }
     }
-    
-    // ✅ BARU: Update status dashboard setiap ganti section
+
+    // ✅ UPDATE STATUS DASHBOARD SETELAH GANTI SECTION
     updateDashboardStatus();
-    
-    // ✅ BARU: Update sidebar state setelah ganti section
+
+    // ✅ UPDATE SIDEBAR STATE SETELAH GANTI SECTION
     setTimeout(() => {
-            updateSidebarState();
+        updateSidebarState();
     }, 100);
+    
+    // ✅ SIMPAN DATA SETELAH PERUBAHAN SECTION
+    setTimeout(() => {
+        saveAllData();
+    }, 200);
+    
+    console.log("✅ SECTION SWITCHING COMPLETED");
+}
+
+// ✅ FUNGSI BARU: UPDATE FIELD JENIS PAKET & HARGA OTOMATIS
+function updateJenisPaketField() {
+    const jenisPaketField = document.getElementById('jenisPaket');
+    const hargaPaketField = document.getElementById('hargaPaket');
+    
+    if (jenisPaketField && hargaPaketField && currentUser && currentUser.paket) {
+        // Isi jenis paket
+        jenisPaketField.value = currentUser.paket;
+        
+        // Isi harga paket berdasarkan jenis paket
+        const harga = getTotalByPaket();
+        hargaPaketField.value = harga;
+        
+        console.log("✅ Jenis & harga paket diisi otomatis:", currentUser.paket, harga);
+    } else {
+        console.log("❌ Tidak bisa mengisi jenis & harga paket:", {
+            jenisField: !!jenisPaketField,
+            hargaField: !!hargaPaketField,
+            user: !!currentUser,
+            paket: currentUser?.paket
+        });
+    }
+}
+
+// ✅ FUNGSI BARU: DAPATKAN HARGA BERDASARKAN JENIS PAKET
+function getTotalByPaket() {
+    if (!currentUser || !currentUser.paket) return 'Rp 0';
+    
+    const harga = {
+        'Trial': 'GRATIS',
+        'Basic': 'Rp 10.000',
+        'Premium': 'Rp 15.000', 
+        'VIP': 'Rp 20.000'
+    };
+    
+    return harga[currentUser.paket] || 'Rp 0';
 }
 
 function kirimPembayaran() {
@@ -1531,58 +3381,337 @@ function kirimPembayaran() {
     const nohp = document.getElementById('nohp').value;
     const metode = document.getElementById('metode').value;
 
-    if (!nama || !email || !nohp || !metode) {
+    // ✅ VALIDASI (tetap sama)
+    if (!nama.trim() || !email.trim() || !nohp.trim() || !metode) {
         alert("⚠ Mohon lengkapi semua data sebelum mengirim pembayaran!");
         return;
     }
 
-    // ✅ VERIFIKASI PEMBAYARAN BERHASIL
+    // ✅ PROSES PEMBAYARAN (tetap sama)
     paketActive = true;
     pembayaranVerified = true;
-    waktuSisa = paketDuration; // Set waktu sesuai paket yang dipilih
+    waktuSisa = paketDuration;
 
-    const hasilDiv = document.getElementById('hasilPembayaran');
-    hasilDiv.style.display = 'block';
-    hasilDiv.innerHTML = `
-        <h3>✅ Pembayaran Berhasil Diverifikasi!</h3>
-        <p><strong>Nama:</strong> ${nama}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>No. HP:</strong> ${nohp}</p>
-        <p><strong>Metode:</strong> ${metode}</p>
-        <p><strong>Status:</strong> ✅ AKTIF - Silakan masuk ke Photo Booth</p>
-    `;
+    currentUser.paket = getPaketName(paketDuration);
+    currentUser.paketDuration = paketDuration;
+    currentUser.waktuSisa = waktuSisa;
+    currentUser.pembayaranVerified = true;
+    localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    document.getElementById('formPembayaran').reset();
+    // ✅ TAMPILKAN POPUP BUKTI PEMBAYARAN (BARU!)
+    tampilkanBuktiPembayaran(nama, email, nohp, metode);
     
-    // ✅ KEMBALI KE DASHBOARD setelah 3 detik
+    // ❌ SEMBUNYIKAN/HAPUS TAMPILAN TEXT LAMA (jika ada)
+    const hasilDiv = document.getElementById('hasilPembayaran');
+    if (hasilDiv) {
+        hasilDiv.style.display = 'none';
+    }
+    
+    // Reset form
+    document.getElementById('formPembayaran').reset();
+}
+
+// ✅ FUNGSI BARU: TAMPILKAN POPUP BUKTI PEMBAYARAN
+function tampilkanBuktiPembayaran(nama, email, nohp, metode) {
+    const popup = document.getElementById('buktiPembayaranPopup');
+    const now = new Date();
+    
+    // Format tanggal seperti BCA: DD/MM/YYYY HH:MM:SS
+    const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    
+    // Generate nomor referensi acak
+    const referensi = generateReferensi();
+    
+    // Tentukan total berdasarkan paket
+    const total = getTotalByPaket();
+    
+    // Isi data ke popup
+    document.getElementById('buktiTanggal').textContent = formattedDate;
+    document.getElementById('buktiReferensi').textContent = referensi;
+    document.getElementById('buktiMetode').textContent = getMetodeDisplay(metode);
+    document.getElementById('buktiJenisPaket').textContent = currentUser.paket; // ✅ JENIS PAKET
+    document.getElementById('buktiNama').textContent = nama;
+    document.getElementById('buktiEmail').textContent = email;
+    document.getElementById('buktiNoHP').textContent = nohp;
+    document.getElementById('buktiTotal').textContent = total;
+    
+    // Simpan data untuk download
+    currentBuktiData = { 
+        nama, 
+        email, 
+        nohp, 
+        metode, 
+        jenisPaket: currentUser.paket, // ✅ SIMPAN JENIS PAKET
+        tanggal: formattedDate, 
+        referensi, 
+        total 
+    };
+    
+    // Tampilkan popup
+    popup.style.display = 'flex';
+}
+// ✅ FUNGSI BARU: GENERATE NOMOR REFERENSI
+function generateReferensi() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 20; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// ✅ FUNGSI BARU: TENTUKAN TOTAL BERDASARKAN PAKET
+function getTotalByPaket() {
+    if (!currentUser || !currentUser.paket) return 'Rp 0';
+    
+    const harga = {
+        'Basic': 'Rp 10.000',
+        'Premium': 'Rp 15.000', 
+        'VIP': 'Rp 20.000'
+    };
+    
+    return harga[currentUser.paket] || 'Rp 0';
+}
+
+// ✅ FUNGSI BARU: KONVERSI METODE KE DISPLAY
+function getMetodeDisplay(metode) {
+    const metodeMap = {
+        'transfer': 'Transfer Bank',
+        'qris': 'QRIS',
+        'ewallet': 'GOPAY'
+    };
+    return metodeMap[metode] || metode;
+}
+
+// ✅ FUNGSI BARU: TUTUP POPUP
+function tutupBuktiPembayaran() {
+    const popup = document.getElementById('buktiPembayaranPopup');
+    popup.style.display = 'none';
+    
+    // Redirect ke dashboard
     setTimeout(() => {
         showSection("dashboard");
         updateDashboardStatus();
-    }, 1000);
+    }, 300);
+}
+
+// ✅ FUNGSI BARU: DOWNLOAD STRUK (DENGAN JENIS PAKET)
+function downloadBuktiPembayaran() {
+    if (!currentBuktiData) return;
     
-    console.log("✅ Pembayaran verified, photobooth sekarang AKTIF");
+    // Buat canvas untuk generate gambar struk
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 550; // ✅ TINGGI DITAMBAH UNTUK JENIS PAKET
+    
+    // Background putih
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Header biru
+    ctx.fillStyle = '#004b8d';
+    ctx.fillRect(0, 0, canvas.width, 80);
+    
+    // Text header
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('m-Transfer', canvas.width/2, 35);
+    ctx.font = '14px Arial';
+    ctx.fillText('Photo Booth App', canvas.width/2, 55);
+    
+    // Status berhasil
+    ctx.fillStyle = '#00a650';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText('BERHASIL', canvas.width/2, 100);
+    
+    // Detail transaksi
+    ctx.fillStyle = '#333333';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'left';
+    let y = 140;
+    
+    const details = [
+        `Tanggal: ${currentBuktiData.tanggal}`,
+        `Referensi: ${currentBuktiData.referensi}`,
+        `Metode: ${getMetodeDisplay(currentBuktiData.metode)}`,
+        `Jenis Paket: ${currentBuktiData.jenisPaket}`, // ✅ JENIS PAKET
+        `Nama: ${currentBuktiData.nama}`,
+        `Email: ${currentBuktiData.email}`,
+        `No. HP: ${currentBuktiData.nohp}`,
+        `Total: ${currentBuktiData.total}`
+    ];
+    
+    details.forEach(detail => {
+        ctx.fillText(detail, 20, y);
+        y += 25;
+    });
+    
+    // Footer
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#666666';
+    ctx.textAlign = 'center';
+    ctx.fillText('Biaya Termasuk PPN (Bila ada)', canvas.width/2, y + 30);
+    ctx.fillText('PT. PHOTO BOOTH KELOMPOK 3', canvas.width/2, y + 45);
+    ctx.fillText('NPWP : 0013084496091000', canvas.width/2, y + 60);
+    
+    // Convert ke image dan download
+    const link = document.createElement('a');
+    link.download = `bukti-pembayaran-${currentBuktiData.referensi}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    
+    // Feedback
+    alert('✅ Struk pembayaran berhasil didownload!');
 }
 
 function pilihPaket(namaPaket) {
-    // Set durasi paket
-    if (namaPaket === "Basic") paketDuration = 60 * 60; 
-    if (namaPaket === "Premium") paketDuration = 2 * 60 * 60;
-    if (namaPaket === "VIP") paketDuration = 3 * 60 * 60;
+    console.log("📦 Memilih paket:", namaPaket);
     
-    // Tandai paket dipilih, TAPI pembayaran belum
-    paketActive = false;
-    pembayaranVerified = false;
+    // ✅ CEK APAKAH SUDAH LOGIN
+    if (!currentUser) {
+        showLoginMenu();
+        return;
+    }
     
-    // Reset gallery
-    galleryImages = [];
-    gallery.innerHTML = "";
-    currentIndex = 0;
+    // ✅ CEK APAKAH SUDAH ADA PAKET AKTIF (KECUALI TRIAL)
+    if (currentUser.pembayaranVerified && currentUser.waktuSisa > 0 && namaPaket !== 'Trial') {
+        Swal.fire({
+            title: '⚠ Paket Aktif Ditemukan',
+            html: `Anda sedang memiliki <strong>${currentUser.paket}</strong> yang aktif.<br><br>
+                   Dengan membeli paket baru, paket aktif Anda akan <strong>hilang</strong> dan diganti dengan paket baru.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#ff416c',
+            cancelButtonColor: '#6c757d',
+            width: '450px'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                prosesPembelianPaket(namaPaket);
+            }
+        });
+        return;
+    }
     
-    alert("Anda memilih Paket " + namaPaket + "\nSilahkan lanjutkan ke Menu Pembayaran untuk melakukan pembayaran.");
+    // ✅ LANGSUNG PROSES UNTUK TRIAL ATAU TIDAK ADA PAKET AKTIF
+    prosesPembelianPaket(namaPaket);
+}
+
+// ✅ FUNGSI BARU: PROSES PEMBELIAN PAKET (TERPISAH)
+function prosesPembelianPaket(namaPaket) {
+    console.log("🔄 Memproses pembelian paket:", namaPaket);
     
-    // ✅ KEMBALI KE DASHBOARD, bukan ke pembayaran
-    showSection("dashboard");
-    updateDashboardStatus(); // Update status di dashboard
+    // ✅ CEK APAKAH SUDAH PERNAH PAKAI TRIAL
+    if (namaPaket === "Trial" && currentUser.trialUsed) {
+        Swal.fire({
+            title: '❌ Trial Sudah Dipakai',
+            html: `
+                <div style="text-align: left; margin: 15px 0;">
+                    <p><strong>Anda sudah menggunakan paket Trial sebelumnya!</strong></p>
+                    <p>Paket Trial hanya bisa digunakan <strong>sekali saja</strong> per akun.</p>
+                    <br>
+                    <p>💡 Silakan pilih paket berbayar untuk terus menggunakan Photo Booth.</p>
+                </div>
+            `,
+            icon: 'warning',
+            confirmButtonText: 'Pilih Paket Berbayar',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#ff416c',
+            width: '500px'
+        }).then((result) => {
+            showSection("paket");
+        });
+        return;
+    }
+    
+    // Set durasi dan limit berdasarkan paket
+    if (namaPaket === "Trial") {
+        paketDuration = 10 * 60;
+        paketFotoLimit = 5;
+        paketVideoLimit = 1;
+    } else if (namaPaket === "Basic") {
+        paketDuration = 60 * 60; 
+        paketFotoLimit = 10;
+        paketVideoLimit = 2;
+    } else if (namaPaket === "Premium") {
+        paketDuration = 2 * 60 * 60;
+        paketFotoLimit = 20;
+        paketVideoLimit = 5;
+    } else if (namaPaket === "VIP") {
+        paketDuration = 3 * 60 * 60;
+        paketFotoLimit = 30;  // ✅ VIP JUGA ADA LIMIT
+        paketVideoLimit = 10;
+    } else {
+        console.error("❌ Nama paket tidak valid:", namaPaket);
+        return;
+    }
+    
+    // ✅ SIMPAN DATA PAKET KE USER
+    currentUser.paket = namaPaket;
+    currentUser.paketDuration = paketDuration;
+    currentUser.paketFotoLimit = paketFotoLimit;
+    currentUser.paketVideoLimit = paketVideoLimit;
+    currentUser.fotoTerambil = 0;
+    currentUser.videoTerambil = 0;
+    
+    // ✅ TANDAI JIKA INI TRIAL SUDAH DIPAKAI
+    if (namaPaket === "Trial") {
+        currentUser.trialUsed = true;
+    }
+    
+    // ✅ STATUS BERBEDA UNTUK TRIAL vs BAYAR
+    if (namaPaket === "Trial") {
+        paketActive = true;
+        pembayaranVerified = false;
+        currentUser.pembayaranVerified = false;
+        currentUser.waktuSisa = paketDuration;
+        
+        Swal.fire({
+            title: '🎯 Paket Trial Dipilih!',
+            html: `
+                <div style="text-align: left; margin: 15px 0;">
+                    <p><strong>Paket Trial sekarang AKTIF!</strong></p>
+                    <p>✅ Durasi: 10 menit</p>
+                    <p>✅ 3 Foto + 1 Video</p>
+                    <p>✅ Langsung bisa digunakan di Photo Booth</p>
+                    <br>
+                    <p>⚠ <strong>Note:</strong> Trial hanya bisa digunakan <strong>sekali saja</strong></p>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Kembali ke Menu Utama',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#4CAF50',
+            width: '500px'
+        }).then((result) => {
+            showSection("dashboard");
+        });
+        
+    } else {
+        paketActive = false;
+        pembayaranVerified = false;
+        currentUser.pembayaranVerified = false;
+        currentUser.waktuSisa = 0;
+        
+        alert(`Anda memilih Paket ${namaPaket}\nSilahkan lanjutkan ke Menu Pembayaran`);
+        showSection("dashboard");
+    }
+    
+    // Simpan ke localStorage
+    localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    loadUserGallery();
+    
+    updateDashboardStatus();
 }
 
 function mulaiTimerPaket() {
@@ -1596,10 +3725,25 @@ function mulaiTimerPaket() {
     displayTimer.style.display = "block";
     displayTimer.innerText = "Sisa waktu: " + formatTime(waktuSisa);
 
+    // ✅ AUTO-SAVE SISA WAKTU KE USER PROFILE SETIAP 10 DETIK
+    if (currentUser && waktuSisa % 10 === 0) {
+        currentUser.waktuSisa = waktuSisa;
+        localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+
     if (waktuSisa <= 0) {
       clearInterval(paketTimer);
       paketActive = false;
       displayTimer.innerText = "Waktu paket habis";
+
+      // ✅ UPDATE USER PROFILE KETIKA WAKTU HABIS
+      if (currentUser) {
+          currentUser.waktuSisa = 0;
+          currentUser.pembayaranVerified = false;
+          localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      }
 
       alert("Waktu paket Anda sudah habis.");
 
@@ -1614,6 +3758,58 @@ function formatTime(sec) {
   let m = Math.floor(sec / 60);
   let s = sec % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function handlePembayaranClick() {
+    if (!currentUser) {
+        // ✅ BELUM LOGIN: LANGSUNG TAMPILKAN POPUP LOGIN
+        showLoginMenu();
+        return;
+    }
+    
+    // ✅ CEK APAKAH SUDAH PILIH PAKET BAYAR (TRIAL TIDAK DIANGGAP)
+    if (!currentUser.paket || currentUser.paket === "Trial") {
+        alert("📦 Silakan pilih paket berbayar terlebih dahulu di Menu Paket!");
+        showSection('paket');
+        return;
+    }
+    
+    // ✅ CEK APAKAH SUDAH BAYAR
+    if (currentUser.pembayaranVerified) {
+        alert("✅ Anda sudah memiliki paket aktif! Tidak perlu bayar lagi.");
+        showSection('dashboard');
+        return;
+    }
+    
+    showSection('pembayaran');
+}
+
+function handlePhotoboothClick() {
+    if (!currentUser) {
+        // ✅ BELUM LOGIN: LANGSUNG TAMPILKAN POPUP LOGIN
+        showLoginMenu();
+        return;
+    }
+    
+    // ✅ SUDAH LOGIN: CEK APAKAH PAKET TRIAL ATAU SUDAH BAYAR
+    if (currentUser.paket === "Trial" && currentUser.waktuSisa > 0) {
+        // ✅ TRIAL AKTIF: LANGSUNG BISA
+        showSection('photobooth');
+    } 
+    else if (currentUser.pembayaranVerified && currentUser.waktuSisa > 0) {
+        // ✅ SUDAH BAYAR: LANGSUNG BISA
+        showSection('photobooth');
+    }
+    else {
+        // ❌ BELUM ADA PAKET AKTIF
+        if (!currentUser.paket) {
+            alert("📦 Silakan pilih paket terlebih dahulu di Menu Paket!");
+        } else if (currentUser.paket === "Trial" && currentUser.waktuSisa <= 0) {
+            alert("⏰ Waktu trial Anda sudah habis! Silakan pilih paket berbayar.");
+        } else {
+            alert("⚠ Silakan lakukan pembayaran terlebih dahulu!");
+        }
+    }
 }
 
 function updateDashboardStatus() {
@@ -1742,13 +3938,7 @@ function printFoto(dataURL) {
     link.click();
     
     showFeedback("📥 Foto didownload - silakan print manual dari file");
-    
-    // Optional: Tampilkan instruksi
-    setTimeout(() => {
-        if (confirm("Foto telah didownload. Buka dialog print untuk file yang didownload?")) {
-            // Bisa tambahkan instruksi di sini
-        }
-    }, 1000);
+
 }
 
 // ✅ FUNGSI FEEDBACK UNTUK USER
@@ -1835,8 +4025,6 @@ function handleDoubleClick() {
     }, 600);
     
     // Tampilkan konfirmasi
-    if (confirm("Apakah Anda yakin ingin merefresh halaman? Semua progress akan direset.")) {
-        // Reset semua state
         resetAppState();
         
         // Feedback sebelum refresh
@@ -1847,7 +4035,7 @@ function handleDoubleClick() {
             location.reload();
         }, 1000);
     }
-}
+
 function resetAppState() {
     // Reset semua variable state
     paketActive = false;
@@ -1873,6 +4061,52 @@ function resetAppState() {
 }
 
 
+// ✅ FUNGSI HARUS DITARUH DI SINI (SEBELUM DOMContentLoaded)
+function hubungiKami() {
+    console.log("🔍 Fungsi hubungiKami dipanggil!"); // ✅ DEBUG
+    
+    const nomorWhatsApp = '6282163235170'; // ✅ GANTI DENGAN NOMOR ANDA
+    const pesanOtomatis = 'Halo web photo booth online ya? Saya ingin bertanya tentang layanan photo booth Anda.';
+    const pesanEncoded = encodeURIComponent(pesanOtomatis);
+    const urlWhatsApp = `https://wa.me/${nomorWhatsApp}?text=${pesanEncoded}`;
+    
+    console.log("📱 URL WhatsApp:", urlWhatsApp); // ✅ DEBUG
+    
+    // Tampilkan konfirmasi sebelum redirect
+    Swal.fire({
+        title: '📞 Hubungi Kami',
+        html: `
+            <div style="text-align: left; margin: 15px 0;">
+                <p><strong>Anda akan diarahkan ke WhatsApp</strong></p>
+                <p>📱 Nomor: +${nomorWhatsApp}</p>
+            </div>
+        `,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Buka WhatsApp',
+        cancelButtonText: 'Batal',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#25D366',
+        cancelButtonColor: '#6c757d',
+        width: '400px',
+        padding: '1.2rem',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            console.log("✅ User mengkonfirmasi, membuka WhatsApp...");
+            window.open(urlWhatsApp, '_blank');
+            showFeedback("📱 Membuka WhatsApp...");
+        } else {
+            console.log("❌ User membatalkan");
+        }
+    });
+}
+
 // ===== EVENT LISTENERS TERPUSAT =====
 document.addEventListener('DOMContentLoaded', function() {
     console.log("🚀 Aplikasi Photo Booth dimuat");
@@ -1880,6 +4114,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inisialisasi sidebar
     initSidebar();
     
+    // ✅ EVENT LISTENER UNTUK MENU LOGIN
+    if (menuLogin) {
+        menuLogin.addEventListener('click', function() {
+            if (currentUser) {
+                showUserMenu();
+            } else {
+                showLoginMenu();
+            }
+        });
+        console.log("✅ Event listener Login berhasil dipasang");
+    }
+
     // Camera controls
     startBtn.onclick = startCamera;
     stopBtn.onclick = stopCamera;
@@ -1918,27 +4164,49 @@ document.addEventListener('DOMContentLoaded', function() {
         stopVideoTimer();  
     };
     
-    deleteBtn.onclick = () => {  
-        if (galleryImages.length === 0) { 
-            alert("Belum ada foto/video yang bisa dihapus!"); 
-            return; 
-        }  
-        const deletedItem = galleryImages.splice(currentIndex, 1)[0];
-        if (gallery.children[currentIndex]) gallery.removeChild(gallery.children[currentIndex]);  
-        if (currentIndex >= galleryImages.length) currentIndex = galleryImages.length - 1;  
-        if (currentIndex >= 0) {
-            const nextItem = galleryImages[currentIndex];
-            if (nextItem.type === 'photo') {
-                showOnCamera(currentIndex);
-            } else if (nextItem.type === 'video') {
-                showVideoOnCamera(nextItem.data, true);
-            }
-        } else {
-            startCamera();
-        }
-    };
+deleteBtn.onclick = () => {
+    if (galleryImages.length === 0) {
+        alert("Belum ada foto/video yang bisa dihapus!");
+        return;
+    }
+
+    const deletedItem = galleryImages.splice(currentIndex, 1)[0];
     
-    // Video recording controls
+    // ✅ HAPUS THUMBNAIL DARI TAMPILAN
+    if (gallery.children[currentIndex]) {
+        gallery.removeChild(gallery.children[currentIndex]);
+    }
+    
+    // ✅ UPDATE COUNTER
+    if (currentUser) {
+        currentUser.fotoTerambil = galleryImages.filter(item => item.type === 'photo').length;
+        currentUser.videoTerambil = galleryImages.filter(item => item.type === 'video').length;
+    }
+    
+    // ✅ SIMPAN PERUBAHAN
+    saveAllData();
+    
+    // ✅ TAMPILKAN ITEM BERIKUTNYA
+    if (currentIndex >= galleryImages.length) {
+        currentIndex = galleryImages.length - 1;
+    }
+    
+    if (currentIndex >= 0 && galleryImages.length > 0) {
+        const nextItem = galleryImages[currentIndex];
+        if (nextItem.type === 'photo') {
+            showOnCamera(currentIndex);
+        } else if (nextItem.type === 'video') {
+            showVideoOnCamera(nextItem.data, true);
+        }
+    } else {
+        startCamera();
+    }
+    
+    updatePackageCounter();
+    console.log("🗑 Item deleted, remaining:", galleryImages.length);
+};
+    
+    // ✅ VIDEO RECORDING CONTROLS DENGAN FUNGSI BARU
     startRecBtn.onclick = startRecording;
     pauseRecBtn.onclick = pauseRecording;
     resumeRecBtn.onclick = resumeRecording;
@@ -1962,19 +4230,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Menu Sidebar
-    
-    if (menuGuide) {
-        menuGuide.addEventListener('click', function() {
-            alert("📖 Petunjuk Penggunaan akan segera tersedia!");
-            closeSidebar();
+    if (menuHome) {
+        menuHome.addEventListener('click', function(event) {
+            handleHomeClick(event);
+            if (getCurrentSection() !== 'dashboard') {
+                closeSidebar();
+            }
         });
     }
     
-    if (menuAbout) {
-        menuAbout.addEventListener('click', function() {
-            alert("ℹ Tentang Kami - Photo Booth App v1.0");
+    if (menuGuide) {
+    menuGuide.addEventListener('click', function() {
+        showPetunjukPenggunaan();
+        closeSidebar();
+        });
+    }
+    
+    const menuHubungi = document.getElementById('menuHubungi');
+    if (menuHubungi) {
+        menuHubungi.addEventListener('click', function() {
+            hubungiKami();
             closeSidebar();
         });
+        console.log("✅ Event listener Hubungi Kami berhasil dipasang");
     }
     
     // Download & Print
@@ -1984,12 +4262,1094 @@ document.addEventListener('DOMContentLoaded', function() {
     if (printBtn) {
         printBtn.addEventListener('click', cetakFoto);
     }
+    // Update posisi download button ketika gallery berubah
+    if (downloadBtn && printBtn) {
+    // Panggil sekali saat load
+    setTimeout(updateDownloadButtonPosition, 100);
+    
+    // Update posisi ketika gallery berubah
+    const galleryObserver = new MutationObserver(updateDownloadButtonPosition);
+    const gallery = document.getElementById('gallery');
+    if (gallery) {
+        galleryObserver.observe(gallery, { childList: true, subtree: true });
+    }
+}
     
     // ✅ PASTIKAN STATE AWAL SIDEBAR BENAR
     setTimeout(() => {
         updateSidebarState();
     }, 500);
+
+    // ✅ AUTO LOGIN JIKA ADA SESSION
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateUIAfterLogin();
+        updateDashboardStatus();
+    }
+
+    console.log("🎯 Semua event listener berhasil diinisialisasi");
 });
+
+// ===== ✅ SISTEM LOGIN DENGAN POPUP YANG SUDAH ADA =====
+
+function showLoginMenu() {
+    // ✅ PAKAI POPUP YANG SUDAH ADA - sama seperti alert/confirm
+    Swal.fire({
+        title: '🔐 Akses Photo Booth',
+        text: 'Apakah Anda sudah punya akun?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '✅ Sudah Punya Akun',
+        cancelButtonText: '📝 Belum Punya Akun',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#ff416c',
+        cancelButtonColor: '#6c757d',
+        width: '400px',
+        padding: '1.2rem',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            showLoginForm();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            showRegisterForm();
+        }
+    });
+}
+
+function showLoginForm() {
+    // ✅ PAKAI POPUP YANG SUDAH ADA untuk input login
+    Swal.fire({
+        title: '🔓 Login',
+        html: `
+            <div style="margin: 10px 0;">
+                <input type="email" id="loginEmail" placeholder="Email" style="
+                    width:100%; 
+                    padding:12px; 
+                    margin:8px 0; 
+                    border-radius:8px; 
+                    border:1px solid rgba(255,255,255,0.4); 
+                    background:rgba(255,255,255,0.2); 
+                    color:white;
+                    font-size: 1rem;
+                    box-sizing: border-box;
+                ">
+            </div>
+            <div style="margin: 10px 0;">
+                <input type="password" id="loginPassword" placeholder="Password" style="
+                    width:100%; 
+                    padding:12px; 
+                    margin:8px 0; 
+                    border-radius:8px; 
+                    border:1px solid rgba(255,255,255,0.4); 
+                    background:rgba(255,255,255,0.2); 
+                    color:white;
+                    font-size: 1rem;
+                    box-sizing: border-box;
+                ">
+            </div>
+        `,
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#ff416c',
+        cancelButtonText: 'Kembali',
+        showCancelButton: true,
+        width: '400px',
+        padding: '1.2rem',
+        // ✅ TAMBAHKAN INI UNTUK HILANGKAN SCROLL
+        heightAuto: false, // ✅ PENTING: Nonaktifkan auto height
+        scrollbarPadding: false, // ✅ HILANGKAN PADDING SCROLLBAR
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        },
+        preConfirm: () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                Swal.showValidationMessage('Harap isi email dan password');
+                return false;
+            }
+            
+            return { email, password };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            processLogin(result.value.email, result.value.password);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            showLoginMenu();
+        }
+    });
+}
+
+function showRegisterForm() {
+    // ✅ PAKAI POPUP YANG SUDAH ADA untuk input register
+    Swal.fire({
+        title: '📝 Daftar Akun Baru',
+        html: `
+            <div style="margin: 8px 0;">
+                <input type="email" id="registerEmail" placeholder="Email" style="
+                    width:100%; 
+                    padding:12px; 
+                    margin:6px 0; 
+                    border-radius:8px; 
+                    border:1px solid rgba(255,255,255,0.4); 
+                    background:rgba(255,255,255,0.2); 
+                    color:white;
+                    font-size: 1rem;
+                    box-sizing: border-box;
+                ">
+            </div>
+            <div style="margin: 8px 0;">
+                <input type="password" id="registerPassword" placeholder="Buat Password" style="
+                    width:100%; 
+                    padding:12px; 
+                    margin:6px 0; 
+                    border-radius:8px; 
+                    border:1px solid rgba(255,255,255,0.4); 
+                    background:rgba(255,255,255,0.2); 
+                    color:white;
+                    font-size: 1rem;
+                    box-sizing: border-box;
+                ">
+            </div>
+            <div style="margin: 8px 0;">
+                <input type="password" id="confirmPassword" placeholder="Konfirmasi Password" style="
+                    width:100%; 
+                    padding:12px; 
+                    margin:6px 0; 
+                    border-radius:8px; 
+                    border:1px solid rgba(255,255,255,0.4); 
+                    background:rgba(255,255,255,0.2); 
+                    color:white;
+                    font-size: 1rem;
+                    box-sizing: border-box;
+                ">
+            </div>
+        `,
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonText: 'Daftar',
+        confirmButtonColor: '#ff416c',
+        cancelButtonText: 'Kembali',
+        showCancelButton: true,
+        width: '400px',
+        padding: '1.2rem',
+        // ✅ TAMBAHKAN INI UNTUK HILANGKAN SCROLL
+        heightAuto: false, // ✅ PENTING: Nonaktifkan auto height
+        scrollbarPadding: false, // ✅ HILANGKAN PADDING SCROLLBAR
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        },
+        preConfirm: () => {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (!email || !password || !confirm) {
+                Swal.showValidationMessage('Harap isi semua field');
+                return false;
+            }
+            
+            if (password !== confirm) {
+                Swal.showValidationMessage('Password tidak cocok');
+                return false;
+            }
+            
+            return { email, password };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            processRegister(result.value.email, result.value.password);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            showLoginMenu();
+        }
+    });
+}
+
+function processLogin(email, password) {
+    const userData = JSON.parse(localStorage.getItem('user_' + email));
+    
+    if (userData && userData.password === password) {
+        currentUser = userData;
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        // ✅ UPDATE DATA USER DENGAN STATUS TERBARU
+        if (paketDuration > 0) {
+            currentUser.paket = getPaketName(paketDuration);
+            currentUser.waktuSisa = waktuSisa;
+            localStorage.setItem('user_' + email, JSON.stringify(currentUser));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
+        Swal.fire({
+            title: '✅ Login Berhasil',
+            text: 'Selamat datang!',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#ff416c',
+            width: '400px',
+            padding: '1.2rem',
+            customClass: {
+                popup: 'custom-swal-popup',
+                title: 'custom-swal-title',
+                htmlContainer: 'custom-swal-text'
+            }
+        });
+        
+        updateUIAfterLogin();
+    } else {
+        Swal.fire({
+            title: '❌ Login Gagal',
+            text: 'Email atau password salah!',
+            icon: 'error',
+            confirmButtonText: 'Coba Lagi',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#ff416c',
+            width: '400px',
+            padding: '1.2rem',
+            customClass: {
+                popup: 'custom-swal-popup',
+                title: 'custom-swal-title',
+                htmlContainer: 'custom-swal-text'
+            }
+        }).then(() => {
+            showLoginForm();
+        });
+    }
+}
+
+// ✅ FUNGSI BANTU: DAPATKAN NAMA PAKET DARI DURASI
+function getPaketName(duration) {
+    if (duration === 3600) return 'Basic';
+    if (duration === 7200) return 'Premium'; 
+    if (duration === 10800) return 'VIP';
+    return null;
+}
+
+function processRegister(email, password) {
+    if (localStorage.getItem('user_' + email)) {
+        // ✅ PAKAI POPUP YANG SUDAH ADA untuk error
+        Swal.fire({
+            title: '❌ Pendaftaran Gagal',
+            text: 'Email sudah terdaftar!',
+            icon: 'error',
+            confirmButtonText: 'Coba Lagi',
+            background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+            color: '#ffffff',
+            confirmButtonColor: '#ff416c',
+            width: '400px',
+            padding: '1.2rem',
+            customClass: {
+                popup: 'custom-swal-popup',
+                title: 'custom-swal-title',
+                htmlContainer: 'custom-swal-text'
+            }
+        }).then(() => {
+            showRegisterForm();
+        });
+        return;
+    }
+    
+    const userData = {
+        email: email,
+        password: password,
+        paket: null,
+        waktuSisa: 0,
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('user_' + email, JSON.stringify(userData));
+    
+    // ✅ PAKAI POPUP YANG SUDAH ADA untuk sukses
+    Swal.fire({
+        title: '✅ Pendaftaran Berhasil',
+        text: 'Silakan login dengan akun baru Anda!',
+        icon: 'success',
+        confirmButtonText: 'Login Sekarang',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#ff416c',
+        width: '400px',
+        padding: '1.2rem',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        }
+    }).then(() => {
+        showLoginForm();
+    });
+}
+
+// ✅ EVENT LISTENER UNTUK MENU LOGIN
+document.addEventListener('DOMContentLoaded', function() {
+    const menuLogin = document.getElementById('menuLogin');
+    if (menuLogin) {
+        menuLogin.addEventListener('click', showLoginMenu);
+    }
+});
+
+function updateUIAfterLogin() {
+    if (currentUser) {
+        // ✅ UBAH TAMPILAN MENU LOGIN JADI NAMA USER + ICON
+        document.getElementById('menuLogin').innerHTML = `👤 ${currentUser.email}`;
+        updateDashboardStatus();
+        
+        // ✅ UBAH EVENT LISTENER UNTUK MENU USER
+        const menuLogin = document.getElementById('menuLogin');
+        menuLogin.removeEventListener('click', showLoginMenu); // Hapus listener lama
+        menuLogin.addEventListener('click', showUserMenu); // Tambah listener baru
+    }
+}
+
+// ✅ FUNGSI BARU: MENU USER SETELAH LOGIN
+function showUserMenu() {
+    let statusText = 'Belum ada paket aktif';
+    if (currentUser.paket && currentUser.waktuSisa > 0) {
+        statusText = `Paket ${currentUser.paket} - Sisa waktu: ${formatTime(currentUser.waktuSisa)}`;
+    } else if (currentUser.paket) {
+        statusText = `Paket ${currentUser.paket} - Menunggu pembayaran`;
+    }
+    
+    Swal.fire({
+        title: `👤 ${currentUser.email}`,
+        text: statusText,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: '🚪 Logout',
+        cancelButtonText: '✖ Batal',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#ff416c',
+        cancelButtonColor: '#6c757d',
+        width: '400px',
+        padding: '1.2rem',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            processLogout();
+        }
+    });
+}
+
+// ✅ FUNGSI PROSES LOGOUT - VERSI LENGKAP
+function processLogout() {
+    console.log("🚪 PROSES LOGOUT DIMULAI");
+    
+    // ✅ TAMPILKAN DATA SEBELUM LOGOUT UNTUK DEBUG
+    console.log("📊 Data sebelum logout:", {
+        user: currentUser ? currentUser.email : 'none',
+        galleryItems: galleryImages ? galleryImages.length : 0,
+        photos: galleryImages ? galleryImages.filter(item => item.type === 'photo').length : 0,
+        videos: galleryImages ? galleryImages.filter(item => item.type === 'video').length : 0,
+        paketActive: paketActive,
+        waktuSisa: waktuSisa
+    });
+
+    // ✅ 1. SIMPAN SEMUA DATA TERAKHIR SEBELUM LOGOUT
+    console.log("💾 Menyimpan data terakhir...");
+    const saveResult = saveAllData();
+    console.log("✅ Hasil penyimpanan:", saveResult ? "BERHASIL" : "GAGAL");
+    
+    // ✅ 2. BACKUP DATA KE LOCALSTORAGE TAMBAHAN
+    try {
+        if (currentUser && currentUser.email) {
+            const backupData = {
+                user: currentUser,
+                gallery: galleryImages,
+                appState: {
+                    paketActive: paketActive,
+                    pembayaranVerified: pembayaranVerified,
+                    paketDuration: paketDuration,
+                    waktuSisa: waktuSisa,
+                    lastBackup: new Date().toISOString()
+                }
+            };
+            localStorage.setItem(`backup_${currentUser.email}`, JSON.stringify(backupData));
+            console.log("📦 Backup data created");
+        }
+    } catch (error) {
+        console.error("❌ Backup gagal:", error);
+    }
+
+    // ✅ 3. RESET VARIABEL SESSION (TANPA MENGHAPUS DATA)
+    console.log("🔄 Mereset variabel session...");
+    
+    // ✅ SIMPAN DATA USER SEBELUM DIHAPUS (UNTUK KEMBALI)
+    const userBeforeLogout = currentUser;
+    const galleryBeforeLogout = [...galleryImages]; // Copy array
+    
+    // ✅ RESET VARIABEL SESSION
+    currentUser = null;
+    paketActive = false;
+    pembayaranVerified = false;
+    
+    // ✅ JANGAN RESET galleryImages! Data harus tetap ada
+    // galleryImages = []; // ❌ JANGAN LAKUKAN INI!
+    
+    // ✅ Hanya reset tampilan gallery (bukan datanya)
+    if (gallery) {
+        gallery.innerHTML = "";
+        console.log("🎨 Gallery display cleared");
+    }
+    
+    currentIndex = 0;
+    showingPhoto = false;
+    isPreviewActive = false;
+
+    // ✅ 4. BERSIHKAN SESSION TANPA MENGHAPUS DATA
+    console.log("🧹 Membersihkan session...");
+    localStorage.removeItem('currentUser'); // Hanya hapus session
+    // ✅ JANGAN hapus data user_... atau gallery_data!
+    
+    // ✅ 5. UPDATE TAMPILAN UI
+    console.log("🎨 Update tampilan UI...");
+    const menuLoginElement = document.getElementById('menuLogin');
+    if (menuLoginElement) {
+        menuLoginElement.innerHTML = ' Login/Register';
+        
+        // ✅ UPDATE EVENT LISTENER
+        menuLoginElement.removeEventListener('click', showUserMenu);
+        menuLoginElement.addEventListener('click', showLoginMenu);
+        console.log("✅ Menu login diupdate");
+    }
+
+    // ✅ 6. MATIKAN KAMERA JIKA SEDANG AKTIF
+    if (stream) {
+        console.log("📷 Mematikan kamera...");
+        stopCamera();
+    }
+
+    // ✅ 7. HENTIKAN SEMUA TIMER
+    if (paketTimer) {
+        clearInterval(paketTimer);
+        console.log("⏰ Paket timer dihentikan");
+    }
+    if (videoTimerInterval) {
+        clearInterval(videoTimerInterval);
+        console.log("⏰ Video timer dihentikan");
+    }
+
+    // ✅ 8. TAMPILKAN KONFIRMASI LOGOUT
+    console.log("🔄 Menampilkan konfirmasi logout...");
+    Swal.fire({
+        title: '✅ Logout Berhasil',
+        html: `
+        <div style="text-align: left; margin: 15px 0;">
+            <p><strong>Anda telah berhasil logout</strong></p>
+            <p>📸 Data yang tersimpan:</p>
+            <ul style="margin-left: 20px;">
+                <li>Foto: <strong>${galleryBeforeLogout.filter(item => item.type === 'photo').length}</strong> items</li>
+                <li>Video: <strong>${galleryBeforeLogout.filter(item => item.type === 'video').length}</strong> items</li>
+            </ul>
+            <p>🔐 Login kembali dengan email yang sama untuk mengakses data Anda.</p>
+        </div>
+        `,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+        color: '#ffffff',
+        confirmButtonColor: '#ff416c',
+        width: '500px',
+        padding: '1.2rem',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title',
+            htmlContainer: 'custom-swal-text'
+        }
+    }).then((result) => {
+        console.log("✅ Konfirmasi logout selesai");
+        
+        // ✅ 9. REDIRECT KE DASHBOARD
+        showSection('dashboard');
+        
+        // ✅ 10. UPDATE STATUS TERAKHIR
+        updateDashboardStatus();
+        
+        // ✅ 11. VERIFIKASI DATA MASIH ADA
+        setTimeout(() => {
+            console.log("🔍 Verifikasi data pasca-logout:");
+            const savedGallery = localStorage.getItem(STORAGE_KEYS.GALLERY_DATA);
+            console.log("📦 Gallery data in storage:", savedGallery ? "ADA" : "TIDAK ADA");
+            
+            if (savedGallery) {
+                const parsedGallery = JSON.parse(savedGallery);
+                console.log("✅ Data tersimpan dengan aman:", parsedGallery.length, "items");
+            }
+        }, 1000);
+    });
+
+    console.log("✅ PROSES LOGOUT SELESAI - DATA TERJAGA");
+    console.log("📊 Status akhir:", {
+        currentUser: currentUser ? "ADA" : "NULL",
+        galleryItems: galleryImages ? galleryImages.length : 0,
+        dataInStorage: localStorage.getItem(STORAGE_KEYS.GALLERY_DATA) ? "ADA" : "TIDAK ADA"
+    });
+}
+
+// ✅ SISTEM LOAD DATA YANG LEBIH KUAT SAAT PAGE LOAD
+window.addEventListener('load', function() {
+    console.log("🚀 PAGE LOAD - INITIALIZING APPLICATION");
+    
+    // ✅ 1. INISIALISASI VARIABEL PERTAMA (SEBELUM LOAD DATA)
+    console.log("🔄 Inisialisasi variabel...");
+    initVariables();
+    
+    // ✅ 2. LOAD SEMUA DATA DARI LOCALSTORAGE
+    console.log("📦 Loading data dari localStorage...");
+    const dataLoaded = loadAllData();
+    console.log("✅ Hasil loading data:", dataLoaded ? "BERHASIL" : "GAGAL");
+    
+    // ✅ 3. TAMPILKAN DATA YANG DILOAD
+    console.log("📊 Data setelah load:", {
+        currentUser: currentUser ? currentUser.email : 'TIDAK ADA',
+        galleryImages: galleryImages ? galleryImages.length : 0,
+        paketActive: paketActive,
+        waktuSisa: waktuSisa
+    });
+    
+    // ✅ 4. INISIALISASI KOMPONEN LAIN
+    console.log("🔧 Inisialisasi komponen...");
+    initSidebar();
+    
+    // ✅ 5. JIKA ADA USER, LOAD UI DAN GALLERY
+    if (currentUser) {
+        console.log("👤 User ditemukan:", currentUser.email);
+        updateUIAfterLogin();
+        
+        // ✅ LOAD GALLERY DARI galleryImages YANG SUDAH DILOAD
+        setTimeout(() => {
+            console.log("🖼 Loading gallery dari memory...");
+            loadUserGallery();
+            console.log("✅ Gallery loaded:", galleryImages.length, "items");
+        }, 1000);
+        
+    } else {
+        console.log("➡ Tidak ada user session");
+        // ✅ COBA LOAD GALLERY MESKI TANPA USER (data mungkin masih ada)
+        if (galleryImages && galleryImages.length > 0) {
+            console.log("📸 Ada gallery data tanpa user:", galleryImages.length, "items");
+            setTimeout(() => {
+                loadUserGallery();
+            }, 1000);
+        }
+    }
+    
+    // ✅ 6. UPDATE DASHBOARD
+    updateDashboardStatus();
+    
+    // ✅ 7. JALANKAN TIMER JIKA PAKET AKTIF
+    if (paketActive && waktuSisa > 0) {
+        console.log("⏰ Menjalankan timer paket...");
+        mulaiTimerPaket();
+    }
+    
+    console.log("✅ APPLICATION INITIALIZATION COMPLETED");
+});
+
+// ✅ FUNGSI UNTUK INISIALISASI VARIABEL
+function initVariables() {
+    // ✅ PASTIKAN SEMUA VARIABEL ADA
+    if (typeof galleryImages === 'undefined') {
+        galleryImages = [];
+    }
+    if (typeof currentUser === 'undefined') {
+        currentUser = null;
+    }
+    if (typeof paketActive === 'undefined') {
+        paketActive = false;
+    }
+    if (typeof pembayaranVerified === 'undefined') {
+        pembayaranVerified = false;
+    }
+    if (typeof paketDuration === 'undefined') {
+        paketDuration = 0;
+    }
+    if (typeof waktuSisa === 'undefined') {
+        waktuSisa = 0;
+    }
+    if (typeof currentIndex === 'undefined') {
+        currentIndex = 0;
+    }
+    if (typeof showingPhoto === 'undefined') {
+        showingPhoto = false;
+    }
+    if (typeof isPreviewActive === 'undefined') {
+        isPreviewActive = false;
+    }
+    
+    console.log("✅ Variabel diinisialisasi");
+}
+
+// ===== ✅ FUNGSI BARU: UPDATE STATUS DI DASHBOARD =====
+function updateDashboardStatus() {
+    const statusDiv = document.getElementById('statusPembayaran');
+    if (!statusDiv) return;
+
+    // ✅ CEK DATA PAKET DARI USER PROFILE
+    if (currentUser && currentUser.paket === "Trial" && currentUser.waktuSisa > 0) {
+        // ✅ PAKET TRIAL AKTIF (TANPA STATUS PEMBAYARAN)
+        statusDiv.innerHTML = `
+            <div style="background:rgba(76, 175, 80, 0.2); border:2px solid #4CAF50; padding:15px; border-radius:10px;">
+                <h3>🎯 PAKET TRIAL AKTIF</h3>
+                <p>Anda sedang menggunakan paket Trial. Silakan masuk ke Photo Booth.</p>
+                <p><strong>Sisa waktu: <span id="statusTimer">${formatTime(currentUser.waktuSisa)}</span></strong></p>
+                <p><strong>Foto: ${currentUser.fotoTerambil || 0}/${currentUser.paketFotoLimit} | Video: ${currentUser.videoTerambil || 0}/${currentUser.paketVideoLimit}</strong></p>
+            </div>
+        `;
+        statusDiv.style.display = 'block';
+        
+    } else if (currentUser && currentUser.pembayaranVerified && currentUser.waktuSisa > 0) {
+        // ✅ SUDAH BAYAR & PAKET AKTIF (BAYAR)
+        statusDiv.innerHTML = `
+            <div style="background:rgba(0,255,0,0.1); border:2px solid #00ff00; padding:15px; border-radius:10px;">
+                <h3>✅ PAKET AKTIF - ${currentUser.paket}</h3>
+                <p>Pembayaran telah diverifikasi. Anda dapat menggunakan Photo Booth.</p>
+                <p><strong>Sisa waktu: <span id="statusTimer">${formatTime(currentUser.waktuSisa)}</span></strong></p>
+            </div>
+        `;
+        statusDiv.style.display = 'block';
+        
+    } else if (currentUser && currentUser.paket && !currentUser.pembayaranVerified && currentUser.paket !== "Trial") {
+        // ✅ SUDAH PILIH PAKET BAYAR TAPI BELUM BAYAR
+        statusDiv.innerHTML = `
+            <div style="background:rgba(255,255,0,0.1); border:2px solid #ffff00; padding:15px; border-radius:10px;">
+                <h3>⚠ MENUNGGU PEMBAYARAN - ${currentUser.paket}</h3>
+                <p>Anda sudah memilih paket ${currentUser.paket}. Silakan lakukan pembayaran untuk mengaktifkan Photo Booth.</p>
+            </div>
+        `;
+        statusDiv.style.display = 'block';
+        
+    } else {
+        // ❌ BELUM PILIH PAKET ATAU SUDAH SELESAI
+        statusDiv.style.display = 'none';
+    }
+}
+
+function updateTrialCounter() {
+    if (currentUser && currentUser.paket === "Trial") {
+        const fotoCounter = document.getElementById('fotoCounter');
+        const videoCounter = document.getElementById('videoCounter');
+        
+        if (fotoCounter) {
+            fotoCounter.textContent = `${currentUser.fotoTerambil || 0}/${currentUser.paketFotoLimit}`;
+        }
+        if (videoCounter) {
+            videoCounter.textContent = `${currentUser.videoTerambil || 0}/${currentUser.paketVideoLimit}`;
+        }
+    }
+}
+
+// ✅ FUNGSI BARU: UPDATE COUNTER UNTUK SEMUA PAKET
+function updatePackageCounter() {
+    if (currentUser && currentUser.paket) {
+        const fotoCounter = document.getElementById('fotoCounter');
+        const videoCounter = document.getElementById('videoCounter');
+        
+        if (fotoCounter) {
+            fotoCounter.textContent = `${currentUser.fotoTerambil || 0}/${currentUser.paketFotoLimit}`;
+        }
+        if (videoCounter) {
+            videoCounter.textContent = `${currentUser.videoTerambil || 0}/${currentUser.paketVideoLimit}`;
+        }
+        
+        // ✅ UPDATE JUGA DI DASHBOARD JIKA ADA
+        updateDashboardStatus();
+    }
+}
+
+function loadUserGallery() {
+    console.log("🔄 LOAD USER GALLERY CALLED");
+    
+    // ✅ RESET SEBELUM LOAD
+    gallery.innerHTML = "";
+    
+    if (!galleryImages || galleryImages.length === 0) {
+        console.log("➡ No gallery images to display");
+        return;
+    }
+
+    console.log("🎨 Creating thumbnails for:", galleryImages.length, "items");
+
+    galleryImages.forEach((item, index) => {
+        // ✅ VALIDASI DATA
+        if (!item || !item.id || !item.data) {
+            console.warn("⚠ Invalid item, skipping:", item);
+            return;
+        }
+
+        try {
+            if (item.type === 'photo') {
+                const thumb = document.createElement('img');
+                thumb.className = "thumb";
+                thumb.src = item.data;
+                thumb.setAttribute('data-id', item.id);
+                thumb.onclick = () => {
+                    currentIndex = index;
+                    showingPhoto = true;
+                    showOnCamera(index);
+                };
+                gallery.appendChild(thumb);
+                
+            } else if (item.type === 'video') {
+                const videoContainer = document.createElement('div');
+                videoContainer.style.position = 'relative';
+                videoContainer.style.display = 'inline-block';
+                videoContainer.setAttribute('data-id', item.id);
+                
+                const vid = document.createElement('video');
+                vid.src = item.data;
+                vid.className = "thumb";
+                vid.muted = true;
+                vid.loop = true;
+                vid.autoplay = true;
+                vid.style.transform = "scaleX(1)";
+                vid.controls = false;
+                
+                const controlsOverlay = document.createElement('div');
+                controlsOverlay.style.position = 'absolute';
+                controlsOverlay.style.bottom = '5px';
+                controlsOverlay.style.left = '5px';
+                controlsOverlay.style.right = '5px';
+                controlsOverlay.style.background = 'rgba(0,0,0,0.7)';
+                controlsOverlay.style.borderRadius = '10px';
+                controlsOverlay.style.padding = '5px';
+                controlsOverlay.style.display = 'flex';
+                controlsOverlay.style.alignItems = 'center';
+                controlsOverlay.style.gap = '8px';
+                controlsOverlay.style.fontSize = '10px';
+                controlsOverlay.style.color = 'white';
+                
+                const playBtn = document.createElement('button');
+                playBtn.innerHTML = '▶';
+                playBtn.style.background = 'none';
+                playBtn.style.border = 'none';
+                playBtn.style.color = 'white';
+                playBtn.style.cursor = 'pointer';
+                playBtn.style.fontSize = '12px';
+                
+                const timeDisplay = document.createElement('span');
+                timeDisplay.textContent = '0:00';
+                
+                controlsOverlay.appendChild(playBtn);
+                controlsOverlay.appendChild(timeDisplay);
+                videoContainer.appendChild(vid);
+                videoContainer.appendChild(controlsOverlay);
+                
+                playBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (vid.paused) {
+                        vid.play();
+                        playBtn.innerHTML = '❚❚';
+                    } else {
+                        vid.pause();
+                        playBtn.innerHTML = '▶';
+                    }
+                };
+                
+                vid.ontimeupdate = () => {
+                    const minutes = Math.floor(vid.currentTime / 60);
+                    const seconds = Math.floor(vid.currentTime % 60);
+                    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                };
+                
+                videoContainer.onclick = () => {
+                    currentIndex = index;
+                    showVideoOnCamera(item.data, true);
+                };
+                
+                gallery.appendChild(videoContainer);
+            }
+            
+            console.log(`✅ Thumbnail created for: ${item.type} ${index}`);
+            
+        } catch (error) {
+            console.error(`❌ Error creating thumbnail for item ${index}:`, error);
+        }
+    });
+
+    console.log("✅ Gallery display completed:", gallery.children.length, "thumbnails created");
+    updatePackageCounter();
+}
+
+// ✅ FUNGSI BARU: SIMPAN DATA USER YANG KONSISTEN
+function saveUserData() {
+    if (!currentUser) return false;
+    
+    try {
+        // ✅ PASTIKAN SEMUA DATA TERKINI TERSIMPAN
+        const userData = {
+            ...currentUser,
+            // ✅ PASTIKAN GALLERY SELALU TERUPDATE
+            gallery: galleryImages,
+            // ✅ PASTIKAN COUNTER SESUAI DENGAN GALLERY
+            fotoTerambil: galleryImages.filter(item => item.type === 'photo').length,
+            videoTerambil: galleryImages.filter(item => item.type === 'video').length,
+            // ✅ PASTIKAN STATUS PAKET TERUPDATE
+            paket: currentUser.paket,
+            paketDuration: currentUser.paketDuration,
+            paketFotoLimit: currentUser.paketFotoLimit,
+            paketVideoLimit: currentUser.paketVideoLimit,
+            waktuSisa: currentUser.waktuSisa,
+            pembayaranVerified: currentUser.pembayaranVerified,
+            trialUsed: currentUser.trialUsed,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        // ✅ SIMPAN KE DUA LOKASI UNTUK REDUNDANSI
+        localStorage.setItem('user_' + currentUser.email, JSON.stringify(userData));
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        console.log("💾 Data user disimpan:", {
+            gallery: userData.gallery.length,
+            foto: userData.fotoTerambil,
+            video: userData.videoTerambil
+        });
+        
+        return true;
+    } catch (e) {
+        console.error("❌ Gagal menyimpan data user:", e);
+        return false;
+    }
+}
+
+// ✅ FUNGSI BARU: LOAD DATA USER YANG ROBUST
+function loadUserData() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (!savedUser) {
+        console.log("➡ Tidak ada data user tersimpan");
+        return null;
+    }
+    
+    try {
+        const userData = JSON.parse(savedUser);
+        
+        // ✅ VALIDASI DATA USER
+        if (!userData.email || !userData.gallery) {
+            console.warn("⚠ Data user tidak valid");
+            return null;
+        }
+        
+        // ✅ LOAD DATA DARI BACKUP (user_email) JIKA PERLU
+        const backupData = localStorage.getItem('user_' + userData.email);
+        if (backupData) {
+            const backupUser = JSON.parse(backupData);
+            if (backupUser.gallery && backupUser.gallery.length > userData.gallery.length) {
+                console.log("🔄 Gunakan data dari backup (lebih lengkap)");
+                return backupUser;
+            }
+        }
+        
+        console.log("✅ Data user loaded:", {
+            email: userData.email,
+            gallery: userData.gallery.length,
+            paket: userData.paket
+        });
+        
+        return userData;
+    } catch (e) {
+        console.error("❌ Gagal load data user:", e);
+        return null;
+    }
+}
+
+// ✅ FUNGSI BARU: SYNCHRONIZE COUNTERS DENGAN GALLERY
+function syncCountersWithGallery() {
+    if (!currentUser || !currentUser.gallery) return;
+    
+    const fotoCount = currentUser.gallery.filter(item => item.type === 'photo').length;
+    const videoCount = currentUser.gallery.filter(item => item.type === 'video').length;
+    
+    // UPDATE COUNTER JIKA ADA PERBEDAAN
+    if (currentUser.fotoTerambil !== fotoCount) {
+        console.log(`🔄 Sync foto counter: ${currentUser.fotoTerambil} -> ${fotoCount}`);
+        currentUser.fotoTerambil = fotoCount;
+    }
+    
+    if (currentUser.videoTerambil !== videoCount) {
+        console.log(`🔄 Sync video counter: ${currentUser.videoTerambil} -> ${videoCount}`);
+        currentUser.videoTerambil = videoCount;
+    }
+    
+    // SIMPAN PERUBAHAN
+    try {
+        localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    } catch (e) {
+        console.error("❌ Gagal sync counter:", e);
+    }
+}
+
+// ✅ FUNGSI KONVERSI BLOB KE BASE64
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function cleanupLocalStorage() {
+    try {
+        // ✅ HANYA CLEANUP JIKA BENAR-BENAR PERLU
+        if (currentUser && currentUser.gallery) {
+            // CEK UKURAN TOTAL LOCALSTORAGE
+            let totalSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalSize += localStorage[key].length;
+                }
+            }
+            
+            // JIKA HAMPIR PENUH (4.5MB dari 5MB), LAKUKAN CLEANUP
+            if (totalSize > 4.5 * 1024 * 1024) {
+                console.log("🧹 Storage hampir penuh, lakukan cleanup...");
+                
+                // SIMPAN HANYA 15 ITEM TERBARU (lebih longgar)
+                if (currentUser.gallery.length > 15) {
+                    currentUser.gallery = currentUser.gallery.slice(-15);
+                    
+                    // UPDATE JUGA galleryImages
+                    galleryImages = [...currentUser.gallery];
+                    
+                    localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    console.log("✅ Cleanup gallery: hanya simpan 15 item terbaru");
+                    
+                    // RELOAD GALLERY SETELAH CLEANUP
+                    loadUserGallery();
+                }
+            }
+        }
+    } catch (e) {
+        console.error("❌ Gagal cleanup localStorage:", e);
+    }
+}
+
+// ✅ FUNGSI CLEANUP YANG TIDAK MENGHAPUS DATA PENTING
+function safeCleanup() {
+    try {
+        // ✅ HANYA BERSIHKAN DATA SEMENTARA, BUKAN DATA USER
+        const keysToKeep = [
+            STORAGE_KEYS.USER_DATA,
+            STORAGE_KEYS.GALLERY_DATA,
+            'currentUser'
+        ];
+        
+        if (currentUser && currentUser.email) {
+            keysToKeep.push(`user_${currentUser.email}`);
+        }
+        
+        // ✅ HAPUS HANYA KEY YANG TIDAK PENTING
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!keysToKeep.includes(key) && !key.startsWith('user_')) {
+                localStorage.removeItem(key);
+            }
+        }
+        
+        console.log("🧹 Safe cleanup completed - important data preserved");
+    } catch (error) {
+        console.error("❌ Cleanup error:", error);
+    }
+}
+
+// ✅ FUNGSI UNTUK PETUNJUK PENGGUNAAN
+function showPetunjukPenggunaan() {
+    const modal = document.getElementById('petunjukModal');
+    modal.style.display = 'flex';
+    
+    // Reset ke tab pertama
+    switchTab('panduan-cepat');
+}
+
+function tutupPetunjuk() {
+    const modal = document.getElementById('petunjukModal');
+    modal.style.display = 'none';
+    closeSidebar();
+}
+
+function switchTab(tabName) {
+    // Remove active class dari semua tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Remove active class dari semua tab panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    
+    // Add active class ke tab yang diklik
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+}
+
+// ✅ EVENT LISTENER UNTUK TUTUP MODAL
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('petunjukModal');
+    const closeBtn = document.querySelector('.close-modal');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', tutupPetunjuk);
+    }
+    
+    // Tutup modal kalau klik di luar content
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            tutupPetunjuk();
+        }
+    });
+    
+    // Event listener untuk tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+});
+
+//  FUNGSI BARU: UPDATE POSISI DOWNLOAD BUTTON UNTUK RESPONSIVE
+function updateDownloadButtonPosition() {
+    const downloadSection = document.getElementById('download-section');
+    const gallery = document.getElementById('gallery');
+    
+    if (downloadSection && gallery) {
+        const galleryRect = gallery.getBoundingClientRect();
+        
+        // Jika gallery ada konten, posisikan di samping gallery
+        if (gallery.children.length > 0) {
+            downloadSection.style.bottom = '120px';
+            downloadSection.style.right = '20px';
+        } else {
+            // Jika gallery kosong, posisikan lebih ke tengah bawah
+            downloadSection.style.bottom = '50%';
+            downloadSection.style.right = '20px';
+            downloadSection.style.transform = 'translateY(50%)';
+        }
+    }
+}
 
 </script>  
 </body>  
