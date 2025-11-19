@@ -809,7 +809,7 @@ select option:hover {
   @media (max-width: 768px) {
     #download-section {
         position: fixed;
-        bottom: 80px;
+        bottom: 10px;
         right: 10px;
         gap: 8px;
     }
@@ -823,7 +823,7 @@ select option:hover {
 
 @media (max-width: 480px) {
     #download-section {
-        bottom: 50px;
+        bottom: 5px;
         right: 5px;
     }
     
@@ -1220,6 +1220,115 @@ select option:hover {
     left: 100%;
 }
 
+/* 🎠 PERBAIKI GALLERY CONTAINER */
+#gallery-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 60px;
+    overflow: hidden;
+    border: 2px solid rgba(0, 255, 255, 0.3); /* 🎯 BORDER UNTUK DEBUG */
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* 🎠 PERBAIKI GALLERY - FORCE SINGLE LINE */
+#gallery {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    padding: 15px 10px;
+    width: 100%;
+    min-height: 135px; /* 🎯 TINGGI TETAP */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    
+    /* 🎯 PROPERTI PENTING: FORCE SINGLE LINE */
+    flex-wrap: nowrap !important; /* 🎯 JANGAN PERNAH WRAP KE BARIS BARU */
+    white-space: nowrap !important;
+    max-width: none !important; /* 🎯 HAPUS BATASAN LEBAR */
+}
+
+#gallery::-webkit-scrollbar {
+    display: none;
+}
+
+/* 🎠 THUMBNAIL - UKURAN TETAP */
+.thumb, .gallery > div {
+    width: 140px !important;
+    height: 105px !important;
+    border-radius: 12px;
+    object-fit: cover;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    flex-shrink: 0 !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+    scroll-snap-align: start;
+}
+
+/* 🎠 TOMBOL SCROLL */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 255, 255, 0.9) !important;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000 !important;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.scroll-btn:hover {
+    background: rgba(0, 255, 255, 1) !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+#scrollLeftBtn {
+    left: 5px;
+}
+
+#scrollRightBtn {
+    right: 5px;
+}
+
+/* 🎠 PASTIKAN UKURAN GALLERY CONSISTENT */
+#gallery {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    width: 100% !important;
+    max-width: 480px !important; /* 🎯 3 THUMBNAIL: (140+15)*3 = 465px */
+    min-height: 135px !important;
+    scroll-behavior: smooth !important;
+}
+
+/* 🎠 THUMBNAIL SIZE YANG PASTI */
+.thumb, #gallery > div {
+    width: 140px !important;
+    height: 105px !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    display: block !important;
+}
+
 </style>
 </head>
 <body>
@@ -1327,8 +1436,24 @@ select option:hover {
   </div>
 </div>
 
+<!-- ==================== HTML GALLERY YANG DIPERBAIKI ==================== -->
 <h3 style="text-align:center; margin-top:10px;">Hasil Foto/Video</h3>
-<div id="gallery"></div>
+
+<!-- 🎠 GALLERY CONTAINER DENGAN SCROLL -->
+<div id="gallery-container" style="position: relative; max-width: 600px; margin: 0 auto; padding: 0 50px;">  
+    <!-- 🎠 TOMBOL SCROLL KIRI -->
+    <button id="scrollLeftBtn" class="scroll-btn" style="display: none;">  
+        &lt;  
+    </button>
+
+    <!-- 🎠 GALLERY DENGAN SCROLL -->
+    <div id="gallery" style="display: flex; gap: 16px; overflow-x: auto; scroll-behavior: smooth; padding: 10px 5px; max-width: 100%;"></div>
+
+    <!-- 🎠 TOMBOL SCROLL KANAN -->
+    <button id="scrollRightBtn" class="scroll-btn" style="display: none;">  
+        &gt;  
+    </button>
+</div>
 
 <div id="download-section" style="position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
     <button id="downloadBtn" class="btn-download-small">
@@ -1847,194 +1972,6 @@ window.confirm = (msg) => Swal.fire({
     }
 }).then(result => result.isConfirmed);
 
-// ✅ SISTEM PENYIMPANAN YANG ROBUST
-const STORAGE_KEYS = {
-    USER_DATA: 'photo_booth_user_data',
-    GALLERY_DATA: 'photo_booth_gallery_data',
-    SESSION: 'photo_booth_session'
-};
-
-// ✅ FUNGSI UTAMA UNTUK SIMPAN SEMUA DATA - VERSI PERBAIKI
-function saveAllData() {
-    try {
-        console.log("💾 MENYIMPAN SEMUA DATA...");
-        
-        const dataToSave = {
-            // ✅ DATA USER
-            currentUser: currentUser,
-            // ✅ GALLERY IMAGES (SANGAT PENTING!)
-            galleryImages: galleryImages,
-            // ✅ STATE APLIKASI
-            appState: {
-                paketActive: paketActive,
-                pembayaranVerified: pembayaranVerified,
-                paketDuration: paketDuration,
-                waktuSisa: waktuSisa,
-                currentIndex: currentIndex,
-                showingPhoto: showingPhoto,
-                isPreviewActive: isPreviewActive
-            },
-            // ✅ TIMESTAMP
-            lastSaved: new Date().toISOString(),
-            // ✅ VERSION
-            version: '3.0'
-        };
-
-        // ✅ SIMPAN KE MULTIPLE LOCATIONS UNTUK REDUNDANSI
-        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(dataToSave));
-        localStorage.setItem(STORAGE_KEYS.GALLERY_DATA, JSON.stringify(galleryImages));
-        
-        // ✅ SIMPAN DATA USER TERPISAH JIKA ADA
-        if (currentUser && currentUser.email) {
-            const userData = {
-                ...currentUser,
-                gallery: galleryImages, // ✅ PASTIKAN GALLERY IKUT DISIMPAN
-                lastSaved: new Date().toISOString()
-            };
-            localStorage.setItem(`user_${currentUser.email}`, JSON.stringify(userData));
-        }
-
-        console.log("💾 ALL DATA SAVED SUCCESSFULLY:", {
-            user: currentUser ? currentUser.email : 'none',
-            gallery: galleryImages.length,
-            photos: galleryImages.filter(item => item.type === 'photo').length,
-            videos: galleryImages.filter(item => item.type === 'video').length,
-            size: JSON.stringify(dataToSave).length + ' bytes'
-        });
-
-        return true;
-    } catch (error) {
-        console.error("❌ GAGAL SIMPAN DATA:", error);
-        
-        // ✅ COBA SIMPAN HANYA GALLERY SAJA JIKA FULL SAVE GAGAL
-        try {
-            if (galleryImages.length > 0) {
-                localStorage.setItem(STORAGE_KEYS.GALLERY_DATA, JSON.stringify(galleryImages));
-                console.log("🛟 Berhasil simpan gallery saja");
-            }
-        } catch (e) {
-            console.error("❌ Gagal simpan gallery backup:", e);
-        }
-        
-        return false;
-    }
-}
-
-// ✅ FUNGSI UTAMA UNTUK LOAD SEMUA DATA - VERSI PERBAIKI
-function loadAllData() {
-    try {
-        console.log("🔄 LOADING ALL DATA FROM LOCALSTORAGE...");
-        
-        // ✅ CEK SEMUA SUMBER DATA YANG MUNGKIN
-        const dataSources = [
-            STORAGE_KEYS.USER_DATA,
-            STORAGE_KEYS.GALLERY_DATA,
-            'currentUser' // backup source
-        ];
-        
-        let loadedData = null;
-        let sourceUsed = '';
-        
-        // ✅ COBA LOAD DARI SEMUA SUMBER (PRIORITAS TERTINGGI DULU)
-        for (let source of dataSources) {
-            const dataString = localStorage.getItem(source);
-            if (dataString) {
-                console.log(`✅ Data ditemukan di: ${source}`);
-                loadedData = JSON.parse(dataString);
-                sourceUsed = source;
-                break;
-            }
-        }
-        
-        if (!loadedData) {
-            console.log("➡ Tidak ada data tersimpan di localStorage");
-            return false;
-        }
-        
-        console.log(`📂 Menggunakan data dari: ${sourceUsed}`);
-        
-        // ✅ PROSES DATA YANG DILOAD
-        if (loadedData.currentUser) {
-            currentUser = loadedData.currentUser;
-            console.log("✅ User loaded:", currentUser.email);
-        } else if (loadedData.email) {
-            // JIKA loadedData ADALAH USER DATA LANGSUNG
-            currentUser = loadedData;
-            console.log("✅ User loaded (direct):", currentUser.email);
-        }
-        
-        // ✅ PROSES GALLERY IMAGES
-        if (loadedData.galleryImages && Array.isArray(loadedData.galleryImages)) {
-            galleryImages = loadedData.galleryImages;
-            console.log("✅ GalleryImages loaded:", galleryImages.length, "items");
-        } else if (Array.isArray(loadedData)) {
-            // JIKA loadedData ADALAH ARRAY GALLERY LANGSUNG
-            galleryImages = loadedData;
-            console.log("✅ Gallery array loaded:", galleryImages.length, "items");
-        } else if (loadedData.gallery && Array.isArray(loadedData.gallery)) {
-            // JIKA ADA DI PROPERTY GALLERY
-            galleryImages = loadedData.gallery;
-            console.log("✅ Gallery from property loaded:", galleryImages.length, "items");
-        }
-        
-        // ✅ VALIDASI galleryImages
-        if (!galleryImages || !Array.isArray(galleryImages)) {
-            console.log("⚠ GalleryImages tidak valid, reset ke array kosong");
-            galleryImages = [];
-        }
-        
-        // ✅ PROSES APP STATE
-        if (loadedData.appState) {
-            paketActive = loadedData.appState.paketActive || false;
-            pembayaranVerified = loadedData.appState.pembayaranVerified || false;
-            paketDuration = loadedData.appState.paketDuration || 0;
-            waktuSisa = loadedData.appState.waktuSisa || 0;
-            currentIndex = loadedData.appState.currentIndex || 0;
-            showingPhoto = loadedData.appState.showingPhoto || false;
-            isPreviewActive = loadedData.appState.isPreviewActive || false;
-            
-            console.log("✅ App state loaded");
-        }
-        
-        // ✅ CEK DATA USER DARI BACKUP JIKA PERLU
-        if (currentUser && currentUser.email) {
-            const userBackup = localStorage.getItem(`user_${currentUser.email}`);
-            if (userBackup) {
-                const backupData = JSON.parse(userBackup);
-                if (backupData.gallery && backupData.gallery.length > galleryImages.length) {
-                    console.log("🔄 Menggunakan gallery dari backup user (lebih lengkap)");
-                    galleryImages = backupData.gallery;
-                }
-            }
-        }
-        
-        console.log("🎯 Final loaded data:", {
-            user: currentUser ? currentUser.email : 'none',
-            galleryItems: galleryImages.length,
-            paketActive: paketActive,
-            waktuSisa: waktuSisa
-        });
-        
-        return true;
-        
-    } catch (error) {
-        console.error("❌ ERROR LOADING DATA:", error);
-        // ✅ RESET KE STATE AWAL JIKA ERROR
-        galleryImages = [];
-        currentUser = null;
-        paketActive = false;
-        pembayaranVerified = false;
-        return false;
-    }
-}
-
-// ✅ FUNGSI AUTO-SAVE SETIAP PERUBAHAN
-function autoSave() {
-    setTimeout(() => {
-        saveAllData();
-    }, 100);
-}
-
 // Fungsi untuk menampilkan section tertentu
 function showSection(sectionId) {
     console.log("🔄 Menampilkan section:", sectionId);
@@ -2124,6 +2061,10 @@ let paketActive = false;
 let paketDuration = 0;
 let paketTimer = null;
 let waktuSisa = 0;
+let kameraAktif = false; 
+let timerPaused = true;  
+let startTime = null;    
+let elapsedTime = 0; 
 let stream = null;  
 let currentFrame = "";  
 let audioEnabled = false;  
@@ -2146,6 +2087,245 @@ let menuHubungi = null;
 let paketFotoLimit = 0;
 let paketVideoLimit = 0;
 
+// 🎯 FUNGSI KOMPRESI GAMBAR UNTUK UKURAN LEBIH KECIL
+function compressImage(dataUrl, quality = 0.6) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = dataUrl;
+        
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 🎯 UKURAN LEBIH KECIL UNTUK KOMPRESI
+            const maxWidth = 800;
+            const maxHeight = 600;
+            
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // 🎯 KOMPRESI DENGAN QUALITY LEBIH RENDAH
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(compressedDataUrl);
+        };
+        
+        img.onerror = function() {
+            // 🎯 JIKA KOMPRESI GAGAL, PAKAI DATA ASLI
+            resolve(dataUrl);
+        };
+    });
+}
+
+// 🎯 FUNGSI SIMPAN DATA DENGAN KOMPRESI & MANAGEMENT
+async function enhancedSaveUserData() {
+    if (!currentUser) {
+        console.error("❌ Tidak ada user yang login");
+        return false;
+    }
+
+    try {
+        // 🎯 LIMIT JUMLAH ITEM DI GALLERY UNTUK HEMAT STORAGE
+        const MAX_GALLERY_ITEMS = 15;
+        
+        if (currentUser.gallery && currentUser.gallery.length > MAX_GALLERY_ITEMS) {
+            // 🎯 SIMPAN HANYA ITEM TERBARU
+            currentUser.gallery = currentUser.gallery.slice(-MAX_GALLERY_ITEMS);
+            console.log(`🎯 Gallery dibatasi ${MAX_GALLERY_ITEMS} item terbaru`);
+        }
+
+        const userDataStr = JSON.stringify(currentUser);
+        const dataSize = new Blob([userDataStr]).size;
+        
+        console.log('💾 Ukuran data:', (dataSize / 1024 / 1024).toFixed(2), 'MB');
+
+        // 🎯 CEK JIKA UKURAN MASIH TERLALU BESAR
+        if (dataSize > 4000000) { // 4MB
+            console.warn("⚠ Data hampir penuh, kompresi gallery...");
+            await compressGalleryData();
+            return await retrySaveUserData();
+        }
+
+        // 🎯 SIMPAN KE STORAGE
+        localStorage.setItem('user_' + currentUser.email, userDataStr);
+        localStorage.setItem('currentUser', userDataStr);
+        
+        console.log("✅ Data user berhasil disimpan permanen");
+        return true;
+
+    } catch (error) {
+        console.error("💥 Gagal menyimpan data:", error);
+        
+        // 🎯 CLEANUP & RETRY
+        if (await emergencyStorageCleanup()) {
+            return await retrySaveUserData();
+        }
+        showStorageError();
+        return false;
+    }
+}
+
+// 🎯 FUNGSI KOMPRESI GALLERY DATA
+async function compressGalleryData() {
+    if (!currentUser || !currentUser.gallery) return;
+    
+    console.log("🎯 Melakukan kompresi gallery data...");
+    
+    for (let i = 0; i < currentUser.gallery.length; i++) {
+        const item = currentUser.gallery[i];
+        
+        // 🎯 KOMPRESI HANYA FOTO (VIDEO TIDAK PERLU BASE64)
+        if (item.type === 'photo' && item.data && item.data.startsWith('data:image')) {
+            try {
+                // 🎯 KOMPRESI GAMBAR DENGAN QUALITY RENDAH
+                const compressedData = await compressImage(item.data, 0.5);
+                item.data = compressedData;
+                item.compressed = true;
+                
+                console.log(`🎯 Foto ${i+1} dikompresi`);
+            } catch (e) {
+                console.warn(`⚠ Gagal kompresi foto ${i+1}:`, e);
+            }
+        }
+        
+        // 🎯 HAPUS DATA VIDEO YANG BESAR (SIMPAN HANYA URL BLOB)
+        if (item.type === 'video' && item.data && item.data.startsWith('blob:')) {
+            // Video blob URL tidak bisa disimpan permanen, jadi kita skip
+            // Atau konversi ke format yang lebih kecil
+            item.data = ''; // Kosongkan data video besar
+            item.videoUrl = 'session_only'; // Tandai sebagai session only
+        }
+    }
+    
+    // 🎯 HAPUS ITEM TERLAMA JIKA MASIH BESAR
+    if (currentUser.gallery.length > 10) {
+        currentUser.gallery = currentUser.gallery.slice(-10);
+        console.log("🎯 Hapus item terlama, simpan 10 terbaru");
+    }
+}
+
+// 🎯 FUNGSI LOAD USER DATA YANG ROBUST
+function loadUserData() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            
+            // 🎯 INISIALISASI JIKA DATA TIDAK LENGKAP
+            if (!currentUser.gallery) currentUser.gallery = [];
+            if (!currentUser.fotoTerambil) currentUser.fotoTerambil = 0;
+            if (!currentUser.videoTerambil) currentUser.videoTerambil = 0;
+            if (!currentUser.paket) currentUser.paket = null;
+            if (!currentUser.waktuSisa) currentUser.waktuSisa = 0;
+            
+            // 🎯 LOAD GALLERY KE MEMORY
+            galleryImages = [...currentUser.gallery];
+            
+            console.log(`✅ User data loaded: ${currentUser.gallery.length} items di gallery`);
+            return true;
+            
+        } catch (e) {
+            console.error("❌ Error loading user data:", e);
+            return false;
+        }
+    }
+    return false;
+}
+
+// Fungsi bantu untuk error storage
+function showStorageError() {
+    Swal.fire({
+        title: '💾 Penyimpanan Penuh',
+        html: `
+        <div style="text-align: left;">
+            <p><strong>Penyimpanan perangkat hampir penuh!</strong></p>
+            <p>Beberapa foto/video mungkin tidak tersimpan permanen.</p>
+            <p>Silakan hapus beberapa hasil lama atau download ke perangkat Anda.</p>
+        </div>
+        `,
+        icon: 'warning',
+        confirmButtonText: 'Mengerti'
+    });
+}
+
+// ==================== FUNGSI BARU ====================
+async function aggressiveCleanup() {
+    if (!currentUser || !currentUser.gallery) return;
+    
+    console.log("🧹 Melakukan aggressive cleanup...");
+    
+    // Urutkan dari yang paling lama
+    currentUser.gallery.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    
+    // Simpan hanya 8 item terbaru (bisa disesuaikan)
+    const itemsToKeep = 8;
+    if (currentUser.gallery.length > itemsToKeep) {
+        const deletedCount = currentUser.gallery.length - itemsToKeep;
+        currentUser.gallery = currentUser.gallery.slice(-itemsToKeep);
+        console.log(`🗑 Dihapus ${deletedCount} item terlama`);
+    }
+    
+    // Juga hapus galleryImages yang sesuai
+    galleryImages = [...currentUser.gallery];
+    
+    // Reload gallery UI
+    loadUserGallery();
+    
+    showFeedback("🧹 Penyimpanan dibersihkan untuk menghemat space");
+}
+
+// 🎯 EMERGENCY CLEANUP YANG PINTAR
+async function emergencyStorageCleanup() {
+    try {
+        console.log("🚨 SMART STORAGE CLEANUP!");
+        
+        // 🎯 1. HAPUS DATA USER LAMA
+        const currentUserEmail = currentUser ? currentUser.email : '';
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('user_') && !key.includes(currentUserEmail)) {
+                localStorage.removeItem(key);
+                console.log("🗑 Hapus data user lama:", key);
+            }
+        }
+        
+        // 🎯 2. KOMPRESI GALLERY CURRENT USER
+        if (currentUser && currentUser.gallery) {
+            await compressGalleryData();
+            
+            // 🎯 3. HAPUS 50% ITEM TERLAMA JIKA MASIH BESAR
+            if (currentUser.gallery.length > 8) {
+                const keepCount = Math.floor(currentUser.gallery.length * 0.5);
+                currentUser.gallery = currentUser.gallery.slice(-keepCount);
+                galleryImages = [...currentUser.gallery];
+                console.log(`🎯 Hapus 50% item terlama, simpan ${keepCount} terbaru`);
+            }
+        }
+        
+        console.log("✅ Smart cleanup completed");
+        return true;
+        
+    } catch (e) {
+        console.error("❌ Gagal smart cleanup:", e);
+        return false;
+    }
+}
 
 // ✅ INISIALISASI SIDEBAR
 function initSidebar() {
@@ -2300,109 +2480,126 @@ function updateVideoTimer() {
   videoTimerEl.textContent = `${h}:${m}:${s}`;
 }
 
-  
-function addToGallery(item) {
+// --- FUNGSI addToGallery() DENGAN SCROLL OTOMATIS ---
+async function addToGallery(item) {
+    const index = galleryImages.length;
+
+    let finalData = item;
+    let compressed = false;
+
+    // KOMPRESI OTOMATIS JIKA FOTO
+    if (item.startsWith('data:image')) {
+        try {
+            finalData = await compressImage(item, 0.7);
+            compressed = true;
+            console.log("🎯 Foto dikompresi otomatis");
+        } catch (e) {
+            console.warn("⚠ Gagal kompresi, pakai data asli");
+            finalData = item;
+        }
+    }
+
+    // SIMPAN DATA FOTO
     const photoItem = {
         id: 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        data: item,
+        data: finalData,
         type: 'photo',
         frame: currentFrame,
         timestamp: new Date().toISOString(),
-        storageType: 'base64'
+        storageType: 'base64',
+        compressed: compressed
     };
 
-    // ✅ SIMPAN KE galleryImages
     galleryImages.push(photoItem);
-    
-    // ✅ BUAT THUMBNAIL
+
     const thumb = document.createElement('img');
     thumb.className = "thumb";
-    thumb.src = item;
+    thumb.src = finalData;
     thumb.setAttribute('data-id', photoItem.id);
     thumb.onclick = () => {
-        currentIndex = galleryImages.length - 1;
+        currentIndex = index;
         showingPhoto = true;
-        showOnCamera(currentIndex);
+        showOnCamera(index);
     };
+
+    // STYLE THUMBNAIL
+    thumb.style.width = "140px";
+    thumb.style.height = "105px";
+    thumb.style.objectFit = "cover";
+    thumb.style.borderRadius = "12px";
+    thumb.style.flexShrink = "0";
+    thumb.style.display = "block";
+
+    // TAMBAH KE GALLERY
     gallery.appendChild(thumb);
 
-    // ✅ SIMPAN DATA USER
+    // SIMPAN KE USER PROFILE
     if (currentUser) {
         if (!currentUser.gallery) currentUser.gallery = [];
-        currentUser.gallery.push(photoItem);
-        
-        // ✅ UPDATE COUNTER
-        currentUser.fotoTerambil = currentUser.gallery.filter(item => item.type === 'photo').length;
-        
-        // ✅ SIMPAN DATA
-        saveUserData();
-        
-        console.log(`✅ Foto disimpan: ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}`);
+
+        const isDuplicate = currentUser.gallery.some(existingItem =>
+            existingItem.id === photoItem.id
+        );
+        if (!isDuplicate) {
+            currentUser.gallery.push(photoItem);
+            currentUser.fotoTerambil++;
+            
+            enhancedSaveUserData().then(success => {
+                if (success) {
+                    console.log("✅ Foto disimpan permanen");
+                }
+            });
+        }
     }
 
     updatePackageCounter();
-    setTimeout(updateDownloadButtonPosition, 100);
+
+    // 🎯 SCROLL OTOMATIS KE FOTO BARU - PASTI SAMPAI UJUNG
+    setTimeout(() => {
+        const gallery = document.getElementById('gallery');
+        if (gallery) {
+            // 🎯 SCROLL PASTI KE UJUNG PALING KANAN
+            gallery.scrollTo({
+                left: gallery.scrollWidth,
+                behavior: 'smooth'
+            });
+            
+            // 🎯 UPDATE TOMBOL SETELAH SCROLL
+            setTimeout(() => {
+                updateScrollButtons();
+                console.log('🎠 Auto-scroll ke ujung kanan');
+            }, 400);
+        }
+    }, 300);
 }
 
-// ✅ FUNGSI addToGallery YANG BARU
-function addToGallery(item) {
-    const photoItem = {
-        id: 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-        data: item,
-        type: 'photo',
-        frame: currentFrame,
-        timestamp: new Date().toISOString(),
-        storageType: 'base64'
-    };
-
-    // ✅ SIMPAN KE galleryImages
-    galleryImages.push(photoItem);
-    
-    // ✅ BUAT THUMBNAIL
-    const thumb = document.createElement('img');
-    thumb.className = "thumb";
-    thumb.src = item;
-    thumb.setAttribute('data-id', photoItem.id);
-    thumb.onclick = () => {
-        currentIndex = galleryImages.length - 1;
-        showingPhoto = true;
-        showOnCamera(currentIndex);
-    };
-    gallery.appendChild(thumb);
-
-    // ✅ UPDATE COUNTER DI USER DATA
-    if (currentUser) {
-        currentUser.fotoTerambil = galleryImages.filter(item => item.type === 'photo').length;
-        console.log(`✅ Foto ${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}`);
-    }
-
-    // ✅ SIMPAN SEMUA DATA
-    saveAllData();
-    
-    updatePackageCounter();
-    setTimeout(updateDownloadButtonPosition, 100);
-}
-
-// ✅ FUNGSI addVideoToGallery YANG BARU
+// ==================== FUNGSI addVideoToGallery() TANPA BATASAN ====================
 function addVideoToGallery(videoURL) {
+    const index = galleryImages.length;
+
     const videoItem = {
         id: 'video_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         data: videoURL,
         type: 'video',
         frame: currentFrame,
         timestamp: new Date().toISOString(),
-        storageType: 'base64'
+        storageType: 'blob'
     };
 
-    // ✅ SIMPAN KE galleryImages
     galleryImages.push(videoItem);
-    
-    // ✅ BUAT THUMBNAIL VIDEO (kode thumbnail tetap sama)
+
     const videoContainer = document.createElement('div');
-    videoContainer.style.position = 'relative';
-    videoContainer.style.display = 'inline-block';
     videoContainer.setAttribute('data-id', videoItem.id);
-    
+
+    // ✅ STYLE CONTAINER
+    videoContainer.style.width = "120px";
+    videoContainer.style.height = "90px";
+    videoContainer.style.borderRadius = "12px";
+    videoContainer.style.overflow = "hidden";
+    videoContainer.style.flexShrink = "0";
+    videoContainer.style.display = "block";
+    videoContainer.style.position = "relative";
+
     const vid = document.createElement('video');
     vid.src = videoURL;
     vid.className = "thumb";
@@ -2411,37 +2608,46 @@ function addVideoToGallery(videoURL) {
     vid.autoplay = true;
     vid.style.transform = "scaleX(1)";
     vid.controls = false;
-    
+
+    // ✅ STYLE VIDEO
+    vid.style.width = "100%";
+    vid.style.height = "100%";
+    vid.style.objectFit = "cover";
+    vid.style.borderRadius = "12px";
+
+    // ✅ CONTROLS OVERLAY
     const controlsOverlay = document.createElement('div');
     controlsOverlay.style.position = 'absolute';
     controlsOverlay.style.bottom = '5px';
     controlsOverlay.style.left = '5px';
     controlsOverlay.style.right = '5px';
     controlsOverlay.style.background = 'rgba(0,0,0,0.7)';
-    controlsOverlay.style.borderRadius = '10px';
-    controlsOverlay.style.padding = '5px';
+    controlsOverlay.style.borderRadius = '8px';
+    controlsOverlay.style.padding = '4px';
     controlsOverlay.style.display = 'flex';
     controlsOverlay.style.alignItems = 'center';
-    controlsOverlay.style.gap = '8px';
+    controlsOverlay.style.gap = '6px';
     controlsOverlay.style.fontSize = '10px';
     controlsOverlay.style.color = 'white';
-    
+
     const playBtn = document.createElement('button');
     playBtn.innerHTML = '▶';
     playBtn.style.background = 'none';
     playBtn.style.border = 'none';
     playBtn.style.color = 'white';
     playBtn.style.cursor = 'pointer';
-    playBtn.style.fontSize = '12px';
-    
+    playBtn.style.fontSize = '10px';
+
     const timeDisplay = document.createElement('span');
     timeDisplay.textContent = '0:00';
-    
+
     controlsOverlay.appendChild(playBtn);
     controlsOverlay.appendChild(timeDisplay);
+
     videoContainer.appendChild(vid);
     videoContainer.appendChild(controlsOverlay);
-    
+
+    // ✅ EVENT LISTENERS
     playBtn.onclick = (e) => {
         e.stopPropagation();
         if (vid.paused) {
@@ -2452,31 +2658,50 @@ function addVideoToGallery(videoURL) {
             playBtn.innerHTML = '▶';
         }
     };
-    
+
     vid.ontimeupdate = () => {
         const minutes = Math.floor(vid.currentTime / 60);
         const seconds = Math.floor(vid.currentTime % 60);
-        timeDisplay.textContent =`${minutes}:${seconds.toString().padStart(2, '0')}`;
+        timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
-    
+
     videoContainer.onclick = () => {
-        currentIndex = galleryImages.length - 1;
+        currentIndex = index;
         showVideoOnCamera(videoURL, true);
     };
-    
+
+    // ✅ TAMBAH KE GALLERY - TANPA BATASAN
     gallery.appendChild(videoContainer);
 
-    // ✅ UPDATE COUNTER DI USER DATA
+    // 🎯 SIMPAN KE USER PROFILE
     if (currentUser) {
-        currentUser.videoTerambil = galleryImages.filter(item => item.type === 'video').length;
-        console.log(`✅ Video ${currentUser.videoTerambil}/${currentUser.paketVideoLimit}`);
+        if (!currentUser.gallery) currentUser.gallery = [];
+
+        const isDuplicate = currentUser.gallery.some(existingItem =>
+            existingItem.id === videoItem.id
+        );
+        if (!isDuplicate) {
+            currentUser.gallery.push(videoItem);
+            currentUser.videoTerambil++;
+            
+            enhancedSaveUserData().then(success => {
+                if (success) {
+                    console.log("✅ Video metadata disimpan permanen");
+                }
+            });
+        }
     }
 
-    // ✅ SIMPAN SEMUA DATA
-    saveAllData();
-    
     updatePackageCounter();
-    setTimeout(updateDownloadButtonPosition, 100);
+
+    // SCROLL KE THUMBNAIL BARU
+    setTimeout(() => {
+        const gallery = document.getElementById('gallery');
+        if (gallery) {
+            gallery.scrollLeft = gallery.scrollWidth;
+            setTimeout(updateScrollButtons, 100);
+        }
+    }, 200);
 }
 
 // 🔊 Bunyi timer  
@@ -2501,10 +2726,8 @@ function playShutter() {
   shutterSound.play().catch(err => console.warn("Gagal memutar suara jepret:", err));  
 }  
   
-//  Nyalakan kamera dengan resolusi tinggi
 async function startCamera() {
     try {
-      
         const constraints = {
             video: {
                 width: { ideal: 1280 },
@@ -2515,11 +2738,11 @@ async function startCamera() {
         };
 
         stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = stream;
-        video.style.display = 'block'; //  TAMPILKAN VIDEO
-        canvas.style.display = 'none';
 
-        //  SET CANVAS RESOLUTION TINGGI
+        video.srcObject = stream;
+        video.style.display = 'block';
+        canvas.style.display = 'none';
+        
         canvas.width = 1280;
         canvas.height = 720;
 
@@ -2527,55 +2750,59 @@ async function startCamera() {
             frameOverlay.style.display = 'block';
             frameOverlay.style.transform = "scaleX(-1)";
         }
+
         audioEnabled = true;
         showingPhoto = false;
-
-        // Terapkan filter yang dipilih
         video.style.filter = filterSelect.value || "none";
-
-        // Sembunyikan kontrol video jika sebelumnya muncul
         videoControlsContainer.style.display = 'none';
         
-        console.log("  Kamera berhasil dinyalakan");
+        console.log("📷 Kamera berhasil dinyalakan");
+
+        // ✅ TIMER: MULAI JALANKAN TIMER KETIKA KAMERA AKTIF
+        if (paketActive && timerPaused) {
+            mulaiTimerPaket();
+            kameraAktif = true;
+            timerPaused = false;
+            console.log("⏱ Timer paket dimulai (kamera aktif)");
+        }
+
     } catch (err) {
         alert("Tidak dapat mengakses kamera: " + err);
     }
 }
 
-//  Matikan kamera dengan sempurna
 function stopCamera() {
+    // ✅ TIMER: PAUSE TIMER KETIKA KAMERA DIMATIKAN
+    if (paketActive && !timerPaused) {
+        pauseTimerPaket();
+        kameraAktif = false;
+        timerPaused = true;
+        console.log("⏸ Timer paket di-pause (kamera non-aktif)");
+    }
+
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         stream = null;
     }
 
-    // Matikan tampilan kamera TAPI JANGAN SEMBUNYIKAN CONTAINER
     video.srcObject = null;
     video.src = "";
     video.pause();
-    video.style.display = 'none'; //  SEMBUNYIKAN VIDEO SAJA
-
-    // Sembunyikan elemen kamera TAPI CONTAINER TETAP TAMPIL
+    video.style.display = 'none';
     canvas.style.display = 'none';
     frameOverlay.style.display = 'none';
     videoControlsContainer.style.display = 'none';
     videoTimerEl.style.display = 'none';
     stopVideoTimer();
-
-    // Tampilkan kembali galeri hasil
-    gallery.style.display = 'flex';
+    //gallery.style.display = 'flex';
     
-    //  JANGAN SEMBUNYIKAN camera-container!
-    // Biarkan container tetap tampil dalam keadaan "mati"
-    
-    // Sembunyikan tombol kontrol video
     startRecBtn.style.display = 'none';
     pauseRecBtn.style.display = 'none';
     stopRecBtn.style.display = 'none';
     if (typeof resumeRecBtn !== 'undefined')
         resumeRecBtn.style.display = 'none';
 
-    console.log("  Kamera dimatikan, container tetap tampil");
+    console.log("📷 Kamera dimatikan, timer di-pause");
 }
 
 function showCameraContainer() {
@@ -2629,14 +2856,12 @@ function showCameraContainer() {
     }
 }
   
+// 📸 Ambil foto                                                                                 capture
 function capturePhoto() {
-    // ✅ VALIDASI LIMIT DENGAN DATA YANG KONSISTEN
+    // ✅ CEK LIMIT FOTO UNTUK SEMUA PAKET (TRIAL, BASIC, PREMIUM, VIP)
     if (currentUser && currentUser.paket) {
-        // PASTIKAN COUNTER SESUAI DENGAN GALLERY
-        syncCountersWithGallery();
-        
         if (currentUser.fotoTerambil >= currentUser.paketFotoLimit) {
-            let pesan = "";
+            let pesan = '';
             if (currentUser.paket === "Trial") {
                 pesan = 'Upgrade ke paket berbayar untuk foto unlimited!';
             } else if (currentUser.paket === "VIP") {
@@ -2646,15 +2871,15 @@ function capturePhoto() {
             }
             
             Swal.fire({
-                title: '⚠ Limit Foto Habis',
+                title: '❌ Limit Foto Habis',
                 html: `
-                <div style="text-align: left; margin: 15px 0;">
-                    <p><strong>Anda sudah mencapai batas foto untuk paket ${currentUser.paket}!</strong></p>
-                    <p>📸 <strong>${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}</strong> foto sudah diambil</p>
-                    <p>⏰ Sisa waktu: <strong>${formatTime(currentUser.waktuSisa)}</strong></p>
-                    <br>
-                    <p><em>${pesan}</em></p>
-                </div>
+                    <div style="text-align: left; margin: 15px 0;">
+                        <p><strong>Anda sudah mencapai batas foto untuk paket ${currentUser.paket}!</strong></p>
+                        <p>📸 <strong>${currentUser.fotoTerambil}/${currentUser.paketFotoLimit}</strong> foto sudah diambil</p>
+                        <p>⏱ Sisa waktu: <strong>${formatTime(currentUser.waktuSisa)}</strong></p>
+                        <br>
+                        <p>💡 <em>${pesan}</em></p>
+                    </div>
                 `,
                 icon: 'warning',
                 confirmButtonText: 'Mengerti',
@@ -2864,178 +3089,189 @@ videoBtn.onclick = async () => {
     stopVideoTimer();
 };
 
+// ==================== FUNGSI startRecording() LENGKAP YANG DIPERBAIKI ====================
 async function startRecording() {
-  // ✅ CEK LIMIT VIDEO UNTUK SEMUA PAKET
-  if (currentUser && currentUser.paket) {
-      if (currentUser.videoTerambil >= currentUser.paketVideoLimit) {
-          let pesan = '';
-          if (currentUser.paket === "Trial") {
-              pesan = 'Upgrade ke paket berbayar untuk lebih banyak video!';
-          } else if (currentUser.paket === "VIP") {
-              pesan = 'Paket VIP Anda sudah mencapai batas video.';
-          } else {
-              pesan = 'Anda sudah mencapai batas video untuk paket ' + currentUser.paket;
-          }
-          
-          Swal.fire({
-              title: '❌ Limit Video Habis',
-              html: `
-                  <div style="text-align: left; margin: 15px 0;">
-                      <p><strong>Anda sudah mencapai batas video untuk paket ${currentUser.paket}!</strong></p>
-                      <p>🎥 <strong>${currentUser.videoTerambil}/${currentUser.paketVideoLimit}</strong> video sudah diambil</p>
-                      <br>
-                      <p>💡 <em>${pesan}</em></p>
-                  </div>
-              `,
-              icon: 'warning',
-              confirmButtonText: 'Mengerti',
-              background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
-              color: '#ffffff',
-              confirmButtonColor: '#ff416c',
-              width: '450px'
-          });
-          return;
-      }
-  }
-
-  if (!stream) return;
-
-  recordedChunks = [];
-
-  // Ambil audio dari mikrofon
-  let audioStream = null;
-  try {
-    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  } catch (err) {
-    console.warn("Tidak dapat mengakses mikrofon: ", err);
-  }
-
-  const recordingCanvas = document.createElement('canvas');
-  recordingCanvas.width = video.videoWidth;
-  recordingCanvas.height = video.videoHeight;
-  const rctx = recordingCanvas.getContext('2d');
-
-  const filterValue = filterSelect.value || "none";
-  let frameImage = null;
-  let lastFrameSrc = "";
-
-  const drawFrame = () => {
-    if (!stream) return;
-    rctx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
-    rctx.filter = filterValue;
-    rctx.drawImage(video, 0, 0, recordingCanvas.width, recordingCanvas.height);
-
-    if (currentFrame && currentFrame !== lastFrameSrc) {
-      frameImage = new Image();
-      frameImage.src = currentFrame;
-      lastFrameSrc = currentFrame;
-      frameImage.onload = () => {
-        rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
-      };
-    } else if (frameImage) {
-      rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
-    }
-
-    requestAnimationFrame(drawFrame);
-  };
-  drawFrame();
-
-  const canvasStream = recordingCanvas.captureStream(30);
-  const combinedStream = audioStream
-    ? new MediaStream([...canvasStream.getVideoTracks(), ...audioStream.getAudioTracks()])
-    : canvasStream;
-
-  // ✅ SET DURASI REKAMAN MAX 30 DETIK UNTUK HINDARI FILE BESAR
-  mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm; codecs=vp9' });
-  
-  mediaRecorder.ondataavailable = e => {
-    if (e.data.size > 0) recordedChunks.push(e.data);
-  };
-
-  mediaRecorder.onstop = async () => {
-    const blob = new Blob(recordedChunks, { type: "video/webm" });
-    
-    // ✅ CEK UKURAN FILE - JIKA KECIL (< 5MB) SIMPAN SEBAGAI BASE64, JIKA BESAR BLOB URL
-    let videoData;
-    let storageType = 'blob';
-    
-    if (blob.size < 5 * 1024 * 1024) { // 5MB
-      try {
-        videoData = await blobToBase64(blob);
-        storageType = 'base64';
-        console.log("✅ Video disimpan sebagai Base64 (size:", blob.size, "bytes)");
-      } catch (e) {
-        console.warn("❌ Gagal konversi ke Base64, gunakan Blob URL");
-        videoData = URL.createObjectURL(blob);
-      }
-    } else {
-      videoData = URL.createObjectURL(blob);
-      console.log("✅ Video disimpan sebagai Blob URL (size:", blob.size, "bytes)");
-    }
-    
-    // ✅ TAMPILKAN VIDEO DI GALLERY
-    addVideoToGallery(videoData);
-    
-    // ✅ UPDATE COUNTER & SIMPAN KE USER DATA
+    // ✅ CEK LIMIT VIDEO UNTUK SEMUA PAKET
     if (currentUser && currentUser.paket) {
-        currentUser.videoTerambil++;
-        
-        if (!currentUser.gallery) currentUser.gallery = [];
-        
-        // ✅ SIMPAN DENGAN INDIKATOR STORAGE TYPE
-        const videoItem = {
-            data: videoData,
-            type: 'video',
-            frame: currentFrame,
-            timestamp: new Date().toISOString(),
-            storageType: storageType,
-            size: blob.size
-        };
-        
-        currentUser.gallery.push(videoItem);
-        
-        // ✅ CLEANUP GALLERY JIKA TERLALU BANYAK
-        if (currentUser.gallery.length > 10) {
-            currentUser.gallery = currentUser.gallery.slice(-10);
-            console.log("🧹 Gallery dibersihkan, simpan 10 item terbaru");
-        }
-        
-        try {
-            localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            console.log("💾 Video disimpan ke localStorage");
-        } catch (e) {
-            console.warn("❌ Gagal simpan ke localStorage:", e.message);
-            cleanupLocalStorage();
-        }
-        
-        console.log(`📊 Progress ${currentUser.paket}: ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} video`);
-        updatePackageCounter();
-        
         if (currentUser.videoTerambil >= currentUser.paketVideoLimit) {
-            showFeedback("🎯 Batas video tercapai!");
-        } else {
-            showFeedback(`🎥 Video ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} direkam`);
+            let pesan = "";
+            if (currentUser.paket === "Trial") {
+                pesan = 'Upgrade ke paket berbayar untuk lebih banyak video!';
+            } else if (currentUser.paket === "VIP") {
+                pesan = 'Paket VIP Anda sudah mencapai batas video.';
+            } else {
+                pesan = 'Anda sudah mencapai batas video untuk paket ' + currentUser.paket;
+            }
+
+            Swal.fire({
+                title: '🎥 Limit Video Habis',
+                html: `
+                <div style="text-align: left; margin: 15px 0;">
+                    <p><strong>Anda sudah mencapai batas video untuk paket ${currentUser.paket}!</strong></p>
+                    <p>🎥 <strong>${currentUser.videoTerambil}/${currentUser.paketVideoLimit}</strong> video sudah diambil</p>
+                    <br>
+                    <p>🎥 <em>${pesan}</em></p>
+                </div>
+                `,
+                icon: 'warning',
+                confirmButtonText: 'Mengerti',
+                background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
+                color: '#ffffff',
+                confirmButtonColor: '#ff416c',
+                width: '450px'
+            });
+            return;
         }
     }
-    
-    stopVideoTimer();
-  };
 
-  // ✅ AUTO STOP SETELAH 30 DETIK UNTUK HINDARI FILE BESAR
-  setTimeout(() => {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
-      showFeedback("⏰ Rekaman dihentikan otomatis (max 30 detik)");
+    if (!stream) return;
+
+    recordedChunks = [];
+
+    // ✅ AMBIL AUDIO DENGAN QUALITY RINGAN
+    let audioStream = null;
+    try {
+        audioStream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+                sampleRate: 22050, // ✅ TURUNKAN SAMPLE RATE
+                channelCount: 1,   // ✅ MONO SAJA
+                echoCancellation: true,
+                noiseSuppression: true
+            } 
+        });
+    } catch (err) {
+        console.warn("Tidak dapat mengakses mikrofon: ", err);
     }
-  }, 30000);
 
-  mediaRecorder.start();
+    // ✅ SET RECORDING QUALITY YANG LEBIH RINGAN
+    const recordingCanvas = document.createElement('canvas');
+    recordingCanvas.width = 640;   // ✅ RESOLUSI LEBIH KECIL (640x480)
+    recordingCanvas.height = 480;  // ✅ DARI 1280x720 → 640x480
+    const rctx = recordingCanvas.getContext('2d');
 
-  startRecBtn.style.display = 'none';
-  pauseRecBtn.style.display = 'inline-block';
-  stopRecBtn.style.display = 'inline-block';
-  startVideoTimer();
+    const filterValue = filterSelect.value || "none";
+    let frameImage = null;
+    let lastFrameSrc = "";
+
+    const drawFrame = () => {
+        if (!stream) return;
+
+        rctx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
+        rctx.filter = filterValue;
+        
+        // ✅ DRAW VIDEO KE CANVAS DENGAN UKURAN LEBIH KECIL
+        rctx.drawImage(video, 0, 0, recordingCanvas.width, recordingCanvas.height);
+
+        if (currentFrame && currentFrame !== lastFrameSrc) {
+            frameImage = new Image();
+            frameImage.src = currentFrame;
+            lastFrameSrc = currentFrame;
+            frameImage.onload = () => {
+                rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
+            };
+        } else if (frameImage) {
+            rctx.drawImage(frameImage, 0, 0, recordingCanvas.width, recordingCanvas.height);
+        }
+
+        requestAnimationFrame(drawFrame);
+    };
+
+    drawFrame();
+
+    const canvasStream = recordingCanvas.captureStream(15); // ✅ TURUNKAN FPS (15 fps)
+
+    const combinedStream = audioStream
+        ? new MediaStream([...canvasStream.getVideoTracks(), ...audioStream.getAudioTracks()])
+        : canvasStream;
+
+    // ✅ SET DURASI REKAMAN MAX 15 DETIK UNTUK FILE LEBIH KECIL
+    mediaRecorder = new MediaRecorder(combinedStream, { 
+        mimeType: 'video/webm; codecs=vp9',
+        videoBitsPerSecond: 1000000 // ✅ BITRATE LEBIH RENDAH (1 Mbps)
+    });
+
+    mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+        const blob = new Blob(recordedChunks, { type: "video/webm" });
+        
+        // ✅ SOLUSI: SIMPAN SEBAGAI BLOB URL, BUKAN BASE64
+        const videoURL = URL.createObjectURL(blob);
+        
+        console.log("🎥 Video disimpan sebagai Blob URL, size:", blob.size, "bytes");
+        
+        // ✅ TAMPILKAN VIDEO DI GALLERY
+        addVideoToGallery(videoURL);
+        
+        // ✅ UPDATE COUNTER & SIMPAN KE USER DATA (TANPA SIMPAN DATA BESAR)
+        if (currentUser && currentUser.paket) {
+            currentUser.videoTerambil++;
+            if (!currentUser.gallery) currentUser.gallery = [];
+            
+            // ✅ SIMPAN HANYA METADATA, BUKAN DATA VIDEO
+            const videoItem = {
+                id: 'video_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                data: videoURL, // ✅ SIMPAN BLOB URL UNTUK SESSION INI
+                type: 'video',
+                frame: currentFrame,
+                timestamp: new Date().toISOString(),
+                storageType: 'blob', // ✅ TANDAI SEBAGAI BLOB
+                size: blob.size
+            };
+            
+            currentUser.gallery.push(videoItem);
+            
+            // ✅ CLEANUP GALLERY JIKA TERLALU BANYAK
+            if (currentUser.gallery.length > 10) {
+                currentUser.gallery = currentUser.gallery.slice(-10);
+                console.log("🧹 Gallery dibersihkan, simpan 10 item terbaru");
+            }
+
+            // ✅ SIMPAN KE STORAGE (UKURAN SANGAT KECIL)
+            enhancedSaveUserData().then(success => {
+                if (success) {
+                    console.log("✅ Metadata video disimpan permanen");
+                } else {
+                    console.warn("⚠ Gagal menyimpan metadata video");
+                }
+            });
+            
+            console.log(`📊 Progress ${currentUser.paket}: ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} video`);
+            updatePackageCounter();
+            
+            if (currentUser.videoTerambil >= currentUser.paketVideoLimit) {
+                showFeedback("🎥 Batas video tercapai!");
+            } else {
+                showFeedback(`🎥 Video ${currentUser.videoTerambil}/${currentUser.paketVideoLimit} direkam`);
+            }
+        }
+        
+        stopVideoTimer();
+        
+        // ✅ CLEANUP STREAMS
+        if (audioStream) {
+            audioStream.getTracks().forEach(track => track.stop());
+        }
+        recordingCanvas.remove();
+    };
+
+    // ✅ AUTO STOP SETELAH 15 DETIK UNTUK HINDARI FILE BESAR
+    setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            showFeedback("⏱ Rekaman dihentikan otomatis (max 15 detik)");
+        }
+    }, 15000); // ✅ 15 DETIK SAJA
+
+    mediaRecorder.start();
+
+    startRecBtn.style.display = 'none';
+    pauseRecBtn.style.display = 'inline-block';
+    stopRecBtn.style.display = 'inline-block';
+
+    startVideoTimer();
 }
 
 function stopRecording() {  
@@ -3165,11 +3401,43 @@ function showCameraAlert(message = "🎥 Nyalakan kamera terlebih dahulu!") {
     });
 }
 
+// ==================== FUNGSI BARU: Video Quality Settings ====================
+function getVideoConstraints() {
+    // ✅ QUALITY SETTINGS YANG LEBIH RINGAN
+    return {
+        video: {
+            width: { ideal: 640 },  // ✅ TURUNKAN RESOLUSI
+            height: { ideal: 480 }, // ✅ DARI 1280x720 → 640x480
+            frameRate: { ideal: 15, max: 25 }, // ✅ TURUNKAN FPS
+            facingMode: 'user',
+            // ✅ KOMPRESI LEBIH BAIK
+            aspectRatio: 1.333
+        },
+        audio: {
+            sampleRate: 22050, // ✅ TURUNKAN SAMPLE RATE AUDIO
+            channelCount: 1,
+            echoCancellation: true,
+            noiseSuppression: true
+        }
+    };
+}
+
+// ==================== FUNGSI BARU: Batasi Durasi Video ====================
+function setupVideoDurationLimit() {
+    // ✅ BATASI DURASI VIDEO MAX 15 DETIK (bukan 30)
+    setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            showFeedback("⏱ Rekaman dihentikan otomatis (max 15 detik)");
+        }
+    }, 15000); // ✅ 15 DETIK SAJA
+}
+
 // === DASHBOARD HANDLER ===                                          yhkkl';l'''''''''''''''''''''''''''''''''''
 function showSection(section) {
-    console.log("🔘 Menampilkan section:", section);
-
-    // ✅ SEMBUNYIKAN SEMUA SECTION UTAMA
+    console.log("🔄 Menampilkan section:", section);
+    
+    // Sembunyikan semua section utama
     const sectionsToHide = ["dashboard", "photobooth-section", "pembayaran-section", "paket-section"];
     sectionsToHide.forEach(id => {
         const element = document.getElementById(id);
@@ -3178,163 +3446,154 @@ function showSection(section) {
             console.log("❌ Sembunyikan:", id);
         }
     });
-
-    // ✅ SEMBUNYIKAN SEMUA CONTENT SECTION SIDEBAR
+    
+    // Sembunyikan semua content section sidebar
     const sections = document.querySelectorAll(".contentSection");
     sections.forEach(sec => {
         sec.style.display = "none";
         console.log("❌ Sembunyikan sidebar section:", sec.id);
     });
-
-    // ✅ TAMPILKAN SECTION YANG DIPILIH
+    
+    // Tampilkan section yang dipilih
     if (section === "dashboard") {
         document.getElementById("dashboard").style.display = "block";
         console.log("✅ Tampilkan: dashboard");
-        
-        // ✅ UPDATE STATUS DASHBOARD
-        updateDashboardStatus();
-        
-    } else if (section === "photobooth") {
-        console.log("🎬 MENUJU PHOTOBOOTH SECTION");
-        
-        // ✅ CEK: HARUS SUDAH LOGIN
-        if (!currentUser) {
-            console.log("❌ User belum login, tampilkan login menu");
-            showLoginMenu();
-            document.getElementById("dashboard").style.display = "block";
-            return;
-        }
+    } 
 
-        // ✅ TAMPILKAN INFO DATA SEBELUM MASUK
-        console.log("📊 Data sebelum masuk photobooth:", {
-            user: currentUser.email,
-            paket: currentUser.paket,
-            galleryItems: galleryImages ? galleryImages.length : 0,
-            fotoTerambil: currentUser.fotoTerambil || 0,
-            videoTerambil: currentUser.videoTerambil || 0,
-            waktuSisa: currentUser.waktuSisa || 0,
-            pembayaranVerified: currentUser.pembayaranVerified || false
-        });
+    else if (section === "photobooth") {
+    // CEK: HARUS SUDAH LOGIN
+    if (!currentUser) {
+        showLoginMenu();
+        document.getElementById("dashboard").style.display = "block";
+        return;
+    }
 
-        // ✅ PASTIKAN GALLERY TERLOAD DENGAN BENAR
-        loadUserGallery();
-        
-        // ✅ TAMPILKAN INFO COUNTER UNTUK SEMUA PAKET
-        const trialInfo = document.getElementById('trialInfo');
-        if (trialInfo) {
-            if (currentUser.paket) {
-                trialInfo.style.display = 'block';
-                trialInfo.querySelector('h4').textContent = ` PAKET ${currentUser.paket.toUpperCase()}`;
-                updatePackageCounter();
-            } else {
-                trialInfo.style.display = 'none';
-            }
-        }
+    // LOAD GALLERY USER
+    loadUserGallery();
 
-        // ✅ VALIDASI PAKET DAN WAKTU
-        if (currentUser.paket === "Trial" && currentUser.waktuSisa > 0) {
-            // ✅ TRIAL AKTIF: LANGSUNG BISA PAKAI
-            document.getElementById("photobooth-section").style.display = "block";
-            console.log("✅ Tampilkan: photobooth-section (Trial aktif)");
-            showCameraContainer();
-            mulaiTimerPaket();
-            
-        } else if (currentUser.pembayaranVerified && currentUser.waktuSisa > 0) {
-            // ✅ SUDAH BAYAR: LANGSUNG BISA
-            document.getElementById("photobooth-section").style.display = "block";
-            console.log("✅ Tampilkan: photobooth-section (Sudah bayar)");
-            showCameraContainer();
-            mulaiTimerPaket();
-            
+    // TAMPILKAN INFO COUNTER
+    const trialInfo = document.getElementById('trialInfo');
+    if (trialInfo) {
+        if (currentUser.paket) {
+            trialInfo.style.display = 'block';
+            trialInfo.querySelector('h4').textContent = ` PAKET ${currentUser.paket.toUpperCase()}`;
+            updatePackageCounter();
         } else {
-            // ❌ BELUM BAYAR ATAU WAKTU HABIS
-            if (currentUser.paket === "Trial" && currentUser.waktuSisa <= 0) {
-                alert("⏰ Waktu trial Anda sudah habis! Silakan pilih paket berbayar.");
-            } else if (currentUser.paket && currentUser.paket !== "Trial") {
-                alert("⚠ Silakan lakukan pembayaran terlebih dahulu!");
-            } else {
-                alert("🔴 Silakan pilih paket terlebih dahulu di Menu Paket!");
-            }
-            document.getElementById("dashboard").style.display = "block";
-            return;
+            trialInfo.style.display = 'none';
         }
-        
-        console.log("✅ PHOTOBOOTH SECTION BERHASIL DITAMPILKAN");
+    }
 
-    } else if (section === "pembayaran") {
-        console.log("💳 MENUJU PEMBAYARAN SECTION");
+    // ✅ PERBAIKAN: TAMPILKAN KAMERA CONTAINER TAPI JANGAN NYALAKAN KAMERA
+    if (currentUser.paket === "Trial" && currentUser.waktuSisa > 0) {
+        // ✅ INIT TIMER TAPI JANGAN JALANKAN
+        paketActive = true;
+        paketDuration = currentUser.paketDuration || 600; // 10 menit untuk trial
+        waktuSisa = currentUser.waktuSisa;
+        elapsedTime = currentUser.elapsedTime || 0;
         
+        // ✅ TAMPILKAN TIMER TAPI PAUSED
+        const displayTimer = document.getElementById("paketTimerDisplay");
+        displayTimer.style.display = "block";
+        displayTimer.innerText = "⏸ Timer paused: " + formatTime(waktuSisa);
+        
+        timerPaused = true;
+        kameraAktif = false;
+        
+        document.getElementById("photobooth-section").style.display = "block";
+        
+        // ✅ TAMBAHKAN INI: TAMPILKAN KAMERA CONTAINER
+        showCameraContainer();
+        console.log("✅ Masuk photobooth - Kamera container tampil, Timer siap (paused)");
+
+    } else if (currentUser.pembayaranVerified && currentUser.waktuSisa > 0) {
+        // ✅ SAMA UNTUK PAKET BAYAR
+        paketActive = true;
+        paketDuration = currentUser.paketDuration;
+        waktuSisa = currentUser.waktuSisa;
+        elapsedTime = currentUser.elapsedTime || 0;
+        
+        const displayTimer = document.getElementById("paketTimerDisplay");
+        displayTimer.style.display = "block";
+        displayTimer.innerText = "⏸ Timer paused: " + formatTime(waktuSisa);
+        
+        timerPaused = true;
+        kameraAktif = false;
+        
+        document.getElementById("photobooth-section").style.display = "block";
+        
+        // ✅ TAMBAHKAN INI: TAMPILKAN KAMERA CONTAINER
+        showCameraContainer();
+        console.log("✅ Masuk photobooth - Kamera container tampil, Timer siap (paused)");
+
+    } else {
+        // BELUM BAYAR ATAU WAKTU HABIS
+        if (currentUser.paket === "Trial" && currentUser.waktuSisa <= 0) {
+            alert("😊 Waktu trial Anda sudah habis! Silakan pilih paket berbayar.");
+        } else if (currentUser.paket && currentUser.paket !== "Trial") {
+            alert("△ Silakan lakukan pembayaran terlebih dahulu!");
+        } else {
+            alert("△ Silakan pilih paket terlebih dahulu di Menu Paket!");
+        }
+        document.getElementById("dashboard").style.display = "block";
+        return;
+    }
+}
+    else if (section === "pembayaran") {
         // ✅ CEK: HARUS SUDAH LOGIN
         if (!currentUser) {
-            console.log("❌ User belum login, tampilkan login menu");
             showLoginMenu();
             document.getElementById("dashboard").style.display = "block";
             return;
         }
-
+        
         // ✅ CEK: SUDAH PILIH PAKET BAYAR (TRIAL TIDAK DIANGGAP)
         if (!currentUser.paket || currentUser.paket === "Trial") {
-            alert("🔴 Silakan pilih paket berbayar terlebih dahulu di Menu Paket!");
+            alert("📦 Silakan pilih paket berbayar terlebih dahulu di Menu Paket!");
             document.getElementById("dashboard").style.display = "block";
             return;
         }
-
-        // ✅ CEK: SUDAH BAYAR ATAU BELUM?
+        
+        // ✅ CEK: SUDAH BAYAR
         if (currentUser.pembayaranVerified) {
             alert("✅ Anda sudah memiliki paket aktif! Tidak perlu bayar lagi.");
             document.getElementById("dashboard").style.display = "block";
             return;
         }
-
-        // ✅ TAMPILKAN SECTION PEMBAYARAN
+        
         document.getElementById("pembayaran-section").style.display = "block";
         console.log("✅ Tampilkan: pembayaran-section");
-
+        
         // ✅ OTOMATIS ISI JENIS PAKET & HARGA BERDASARKAN PILIHAN USER
         updateJenisPaketField();
-        
-        console.log("✅ PEMBAYARAN SECTION BERHASIL DITAMPILKAN");
-
-    } else if (section === "paket") {
-        console.log("📦 MENUJU PAKET SECTION");
-        
+    } 
+    else if (section === "paket") {
         document.getElementById("paket-section").style.display = "block";
         console.log("✅ Tampilkan: paket-section");
-        
-        console.log("✅ PAKET SECTION BERHASIL DITAMPILKAN");
-
-    } else {
-        // ✅ UNTUK SECTION SIDEBAR (filesContent, guideContent, aboutContent)
+    }
+    else {
+        // Untuk section sidebar (filesContent, guideContent, aboutContent)
         const targetSection = document.getElementById(section);
         if (targetSection) {
             targetSection.style.display = "block";
             console.log("✅ Tampilkan sidebar section:", section);
             console.log("📍 Posisi:", targetSection.getBoundingClientRect());
             console.log("🎨 Style display:", window.getComputedStyle(targetSection).display);
-
-            // ✅ Force redraw untuk debug
+            
+            // Force redraw dan beri border debug
             targetSection.style.border = "3px solid #00ff00";
             targetSection.style.background = "rgba(0,255,0,0.1)";
-            
         } else {
             console.error("❌ Section tidak ditemukan:", section);
         }
     }
-
-    // ✅ UPDATE STATUS DASHBOARD SETELAH GANTI SECTION
+    
+    // ✅ UPDATE STATUS DASHBOARD
     updateDashboardStatus();
-
+    
     // ✅ UPDATE SIDEBAR STATE SETELAH GANTI SECTION
     setTimeout(() => {
         updateSidebarState();
     }, 100);
-    
-    // ✅ SIMPAN DATA SETELAH PERUBAHAN SECTION
-    setTimeout(() => {
-        saveAllData();
-    }, 200);
-    
-    console.log("✅ SECTION SWITCHING COMPLETED");
 }
 
 // ✅ FUNGSI BARU: UPDATE FIELD JENIS PAKET & HARGA OTOMATIS
@@ -3660,6 +3919,7 @@ function prosesPembelianPaket(namaPaket) {
     currentUser.paketVideoLimit = paketVideoLimit;
     currentUser.fotoTerambil = 0;
     currentUser.videoTerambil = 0;
+    currentUser.elapsedTime = 0;
     
     // ✅ TANDAI JIKA INI TRIAL SUDAH DIPAKAI
     if (namaPaket === "Trial") {
@@ -3715,43 +3975,84 @@ function prosesPembelianPaket(namaPaket) {
 }
 
 function mulaiTimerPaket() {
-  const displayTimer = document.getElementById("paketTimerDisplay");
-
-  clearInterval(paketTimer);
-
-  paketTimer = setInterval(() => {
-    waktuSisa--;
-
+    const displayTimer = document.getElementById("paketTimerDisplay");
+    
+    // ✅ HENTIKAN TIMER SEBELUMNYA JIKA ADA
+    clearInterval(paketTimer);
+    
+    // ✅ HITUNG WAKTU YANG SUDAH BERJALAN
+    if (startTime === null) {
+        startTime = Date.now() - elapsedTime;
+    } else {
+        startTime = Date.now() - elapsedTime;
+    }
+    
     displayTimer.style.display = "block";
-    displayTimer.innerText = "Sisa waktu: " + formatTime(waktuSisa);
 
-    // ✅ AUTO-SAVE SISA WAKTU KE USER PROFILE SETIAP 10 DETIK
-    if (currentUser && waktuSisa % 10 === 0) {
-        currentUser.waktuSisa = waktuSisa;
-        localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    paketTimer = setInterval(() => {
+        const now = Date.now();
+        elapsedTime = now - startTime;
+        waktuSisa = Math.max(0, paketDuration - Math.floor(elapsedTime / 1000));
+        
+        displayTimer.innerText = "Sisa waktu: " + formatTime(waktuSisa);
+
+        // ✅ AUTO-SAVE SISA WAKTU SETIAP 10 DETIK
+        if (currentUser && elapsedTime % 10000 < 1000) {
+            currentUser.waktuSisa = waktuSisa;
+            currentUser.elapsedTime = elapsedTime; // ✅ SIMPAN JUGA elapsedTime
+            enhancedSaveUserData().then(success => {
+                if (success) {
+                    console.log("💾 Waktu paket disimpan:", formatTime(waktuSisa));
+                }
+            });
+        }
+
+        // ✅ CEK JIKA WAKTU HABIS
+        if (waktuSisa <= 0) {
+            clearInterval(paketTimer);
+            paketActive = false;
+            displayTimer.innerText = "⏰ Waktu paket habis";
+            
+            // ✅ UPDATE USER PROFILE
+            if (currentUser) {
+                currentUser.waktuSisa = 0;
+                currentUser.pembayaranVerified = false;
+                currentUser.elapsedTime = 0;
+                enhancedSaveUserData();
+            }
+            
+            // ✅ TAMPILKAN ALERT DAN MATIKAN KAMERA
+            Swal.fire({
+                title: '⏰ Waktu Habis',
+                text: 'Waktu paket Anda sudah habis. Silakan beli paket baru.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            
+            stopCamera();
+            document.getElementById("captureBtn").disabled = true;
+        }
+    }, 1000);
+    
+    console.log("▶ Timer paket berjalan - Kamera aktif");
+}
+
+function pauseTimerPaket() {
+    // ✅ HENTIKAN TIMER TAPI SIMPAN STATUS
+    clearInterval(paketTimer);
+    
+    // ✅ SIMPAN elapsedTime UNTUK DILANJUTKAN NANTI
+    if (startTime !== null) {
+        elapsedTime = Date.now() - startTime;
     }
-
-    if (waktuSisa <= 0) {
-      clearInterval(paketTimer);
-      paketActive = false;
-      displayTimer.innerText = "Waktu paket habis";
-
-      // ✅ UPDATE USER PROFILE KETIKA WAKTU HABIS
-      if (currentUser) {
-          currentUser.waktuSisa = 0;
-          currentUser.pembayaranVerified = false;
-          localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      }
-
-      alert("Waktu paket Anda sudah habis.");
-
-      // Matikan kamera
-      stopCamera();
-      document.getElementById("captureBtn").disabled = true;
+    
+    console.log("⏸ Timer paket di-pause - Kamera non-aktif");
+    
+    // ✅ UPDATE DISPLAY TIMER
+    const displayTimer = document.getElementById("paketTimerDisplay");
+    if (displayTimer && waktuSisa > 0) {
+        displayTimer.innerText = "⏸ Timer paused: " + formatTime(waktuSisa);
     }
-  }, 1000);
 }
 
 function formatTime(sec) {
@@ -3888,18 +4189,21 @@ function downloadFoto(dataURL) {
     showFeedback("✅ Foto berhasil didownload!");
 }
 
+// ==================== MODIFIKASI FUNGSI downloadVideo() ====================
+// GANTI fungsi downloadVideo dengan ini:
+
 function downloadVideo(videoURL) {
+    // ✅ HANDLE BLOB URL UNTUK DOWNLOAD
     const link = document.createElement('a');
-    link.download =   `photo-booth-video-${new Date().getTime()}.webm`;
+    link.download = `photo-booth-video-${new Date().getTime()}.webm`;
     link.href = videoURL;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     // Efek feedback
     showFeedback("✅ Video berhasil didownload!");
 }
-
 // ✅ FUNGSI CETAK FOTO (Hanya Foto, bukan Video)
 function cetakFoto() {
     if (galleryImages.length === 0) {
@@ -4043,25 +4347,29 @@ function resetAppState() {
     paketDuration = 0;
     waktuSisa = 0;
     
+    // ✅ RESET VARIABLE TIMER BARU
+    kameraAktif = false;
+    timerPaused = true;
+    startTime = null;
+    elapsedTime = 0;
+
     // Hentikan semua timer
     if (paketTimer) clearInterval(paketTimer);
     if (videoTimerInterval) clearInterval(videoTimerInterval);
-    
+
     // Matikan kamera jika aktif
     if (stream) {
         stopCamera();
     }
-    
+
     // Reset gallery
     galleryImages = [];
     gallery.innerHTML = "";
     currentIndex = 0;
-    
-    console.log("🔄 State aplikasi direset");
+
+    console.log("🔄 State aplikasi direset termasuk timer");
 }
 
-
-// ✅ FUNGSI HARUS DITARUH DI SINI (SEBELUM DOMContentLoaded)
 function hubungiKami() {
     console.log("🔍 Fungsi hubungiKami dipanggil!"); // ✅ DEBUG
     
@@ -4164,34 +4472,34 @@ document.addEventListener('DOMContentLoaded', function() {
         stopVideoTimer();  
     };
     
-deleteBtn.onclick = () => {
+    deleteBtn.onclick = () => {
     if (galleryImages.length === 0) {
         alert("Belum ada foto/video yang bisa dihapus!");
         return;
     }
 
     const deletedItem = galleryImages.splice(currentIndex, 1)[0];
-    
-    // ✅ HAPUS THUMBNAIL DARI TAMPILAN
-    if (gallery.children[currentIndex]) {
-        gallery.removeChild(gallery.children[currentIndex]);
+
+    // ✅ HAPUS JUGA DARI USER GALLERY (PERMANEN) DENGAN SYSTEM BARU
+    if (currentUser && currentUser.gallery) {
+        const itemIndex = currentUser.gallery.findIndex(item => item.id === deletedItem.id);
+        if (itemIndex !== -1) {
+            currentUser.gallery.splice(itemIndex, 1);
+            
+            // ✅ SIMPAN PERUBAHAN KE STORAGE
+            enhancedSaveUserData().then(success => {
+                if (success) {
+                    console.log("✅ Item dihapus permanen dari storage");
+                }
+            });
+        }
     }
-    
-    // ✅ UPDATE COUNTER
-    if (currentUser) {
-        currentUser.fotoTerambil = galleryImages.filter(item => item.type === 'photo').length;
-        currentUser.videoTerambil = galleryImages.filter(item => item.type === 'video').length;
-    }
-    
-    // ✅ SIMPAN PERUBAHAN
-    saveAllData();
-    
-    // ✅ TAMPILKAN ITEM BERIKUTNYA
-    if (currentIndex >= galleryImages.length) {
-        currentIndex = galleryImages.length - 1;
-    }
-    
-    if (currentIndex >= 0 && galleryImages.length > 0) {
+
+    if (gallery.children[currentIndex]) gallery.removeChild(gallery.children[currentIndex]);
+
+    if (currentIndex >= galleryImages.length) currentIndex = galleryImages.length - 1;
+
+    if (currentIndex >= 0) {
         const nextItem = galleryImages[currentIndex];
         if (nextItem.type === 'photo') {
             showOnCamera(currentIndex);
@@ -4201,9 +4509,11 @@ deleteBtn.onclick = () => {
     } else {
         startCamera();
     }
-    
-    updatePackageCounter();
-    console.log("🗑 Item deleted, remaining:", galleryImages.length);
+
+    setTimeout(() => {
+        limitVisibleThumbnails();
+        updateScrollButtons();
+    }, 100);
 };
     
     // ✅ VIDEO RECORDING CONTROLS DENGAN FUNGSI BARU
@@ -4274,6 +4584,51 @@ deleteBtn.onclick = () => {
         galleryObserver.observe(gallery, { childList: true, subtree: true });
     }
 }
+
+    // 🎠 PERBAIKAN EVENT LISTENER UNTUK SCROLL GALLERY - VERSI DIPERBAIKI
+    console.log("🎠 Memasang event listener untuk scroll gallery...");
+    
+    const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+    const scrollRightBtn = document.getElementById('scrollRightBtn');
+    const gallery = document.getElementById('gallery');
+
+    if (scrollLeftBtn) {
+        scrollLeftBtn.addEventListener('click', scrollGalleryLeft);
+        console.log("🎠 Event listener scroll kiri terpasang");
+    } else {
+        console.error("🎠 Tombol scroll kiri tidak ditemukan!");
+    }
+
+    if (scrollRightBtn) {
+        scrollRightBtn.addEventListener('click', scrollGalleryRight);
+        console.log("🎠 Event listener scroll kanan terpasang");
+    } else {
+        console.error("🎠 Tombol scroll kanan tidak ditemukan!");
+    }
+
+    if (gallery) {
+        gallery.addEventListener('scroll', updateScrollButtons);
+        console.log("🎠 Event listener scroll gallery terpasang");
+        
+        // 🎠 OBSERVER UNTUK DETEKSI PERUBAHAN GALLERY
+        const galleryObserver = new MutationObserver(() => {
+            setTimeout(updateScrollButtons, 100);
+        });
+        
+        galleryObserver.observe(gallery, { 
+            childList: true, 
+            subtree: true 
+        });
+        console.log("🎠 Observer gallery terpasang");
+    }
+    
+    // 🎠 INIT TOMBOL SCROLL PERTAMA KALI
+    setTimeout(() => {
+        updateScrollButtons();
+        console.log("🎠 Inisialisasi tombol scroll selesai");
+    }, 1000);
+    
+    console.log("✅ Gallery scroll system initialized");
     
     // ✅ PASTIKAN STATE AWAL SIDEBAR BENAR
     setTimeout(() => {
@@ -4650,254 +5005,88 @@ function showUserMenu() {
     });
 }
 
-// ✅ FUNGSI PROSES LOGOUT - VERSI LENGKAP
+// ✅ FUNGSI BARU: PROSES LOGOUT
 function processLogout() {
-    console.log("🚪 PROSES LOGOUT DIMULAI");
-    
-    // ✅ TAMPILKAN DATA SEBELUM LOGOUT UNTUK DEBUG
-    console.log("📊 Data sebelum logout:", {
-        user: currentUser ? currentUser.email : 'none',
-        galleryItems: galleryImages ? galleryImages.length : 0,
-        photos: galleryImages ? galleryImages.filter(item => item.type === 'photo').length : 0,
-        videos: galleryImages ? galleryImages.filter(item => item.type === 'video').length : 0,
-        paketActive: paketActive,
-        waktuSisa: waktuSisa
-    });
-
-    // ✅ 1. SIMPAN SEMUA DATA TERAKHIR SEBELUM LOGOUT
-    console.log("💾 Menyimpan data terakhir...");
-    const saveResult = saveAllData();
-    console.log("✅ Hasil penyimpanan:", saveResult ? "BERHASIL" : "GAGAL");
-    
-    // ✅ 2. BACKUP DATA KE LOCALSTORAGE TAMBAHAN
-    try {
-        if (currentUser && currentUser.email) {
-            const backupData = {
-                user: currentUser,
-                gallery: galleryImages,
-                appState: {
-                    paketActive: paketActive,
-                    pembayaranVerified: pembayaranVerified,
-                    paketDuration: paketDuration,
-                    waktuSisa: waktuSisa,
-                    lastBackup: new Date().toISOString()
-                }
-            };
-            localStorage.setItem(`backup_${currentUser.email}`, JSON.stringify(backupData));
-            console.log("📦 Backup data created");
-        }
-    } catch (error) {
-        console.error("❌ Backup gagal:", error);
-    }
-
-    // ✅ 3. RESET VARIABEL SESSION (TANPA MENGHAPUS DATA)
-    console.log("🔄 Mereset variabel session...");
-    
-    // ✅ SIMPAN DATA USER SEBELUM DIHAPUS (UNTUK KEMBALI)
-    const userBeforeLogout = currentUser;
-    const galleryBeforeLogout = [...galleryImages]; // Copy array
-    
-    // ✅ RESET VARIABEL SESSION
+    // Hapus data user dari localStorage
+    localStorage.removeItem('currentUser');
     currentUser = null;
-    paketActive = false;
-    pembayaranVerified = false;
     
-    // ✅ JANGAN RESET galleryImages! Data harus tetap ada
-    // galleryImages = []; // ❌ JANGAN LAKUKAN INI!
+    // ✅ KEMBALIKAN TAMPILAN MENU LOGIN
+    document.getElementById('menuLogin').innerHTML = '🔐 Login/Register';
     
-    // ✅ Hanya reset tampilan gallery (bukan datanya)
-    if (gallery) {
-        gallery.innerHTML = "";
-        console.log("🎨 Gallery display cleared");
-    }
+    // ✅ KEMBALIKAN EVENT LISTENER UNTUK LOGIN
+    const menuLogin = document.getElementById('menuLogin');
+    menuLogin.removeEventListener('click', showUserMenu); // Hapus listener user
+    menuLogin.addEventListener('click', showLoginMenu); // Tambah listener login
     
-    currentIndex = 0;
-    showingPhoto = false;
-    isPreviewActive = false;
-
-    // ✅ 4. BERSIHKAN SESSION TANPA MENGHAPUS DATA
-    console.log("🧹 Membersihkan session...");
-    localStorage.removeItem('currentUser'); // Hanya hapus session
-    // ✅ JANGAN hapus data user_... atau gallery_data!
-    
-    // ✅ 5. UPDATE TAMPILAN UI
-    console.log("🎨 Update tampilan UI...");
-    const menuLoginElement = document.getElementById('menuLogin');
-    if (menuLoginElement) {
-        menuLoginElement.innerHTML = ' Login/Register';
-        
-        // ✅ UPDATE EVENT LISTENER
-        menuLoginElement.removeEventListener('click', showUserMenu);
-        menuLoginElement.addEventListener('click', showLoginMenu);
-        console.log("✅ Menu login diupdate");
-    }
-
-    // ✅ 6. MATIKAN KAMERA JIKA SEDANG AKTIF
-    if (stream) {
-        console.log("📷 Mematikan kamera...");
-        stopCamera();
-    }
-
-    // ✅ 7. HENTIKAN SEMUA TIMER
-    if (paketTimer) {
-        clearInterval(paketTimer);
-        console.log("⏰ Paket timer dihentikan");
-    }
-    if (videoTimerInterval) {
-        clearInterval(videoTimerInterval);
-        console.log("⏰ Video timer dihentikan");
-    }
-
-    // ✅ 8. TAMPILKAN KONFIRMASI LOGOUT
-    console.log("🔄 Menampilkan konfirmasi logout...");
+    // ✅ TAMPILKAN POPUP LOGOUT BERHASIL
     Swal.fire({
         title: '✅ Logout Berhasil',
-        html: `
-        <div style="text-align: left; margin: 15px 0;">
-            <p><strong>Anda telah berhasil logout</strong></p>
-            <p>📸 Data yang tersimpan:</p>
-            <ul style="margin-left: 20px;">
-                <li>Foto: <strong>${galleryBeforeLogout.filter(item => item.type === 'photo').length}</strong> items</li>
-                <li>Video: <strong>${galleryBeforeLogout.filter(item => item.type === 'video').length}</strong> items</li>
-            </ul>
-            <p>🔐 Login kembali dengan email yang sama untuk mengakses data Anda.</p>
-        </div>
-        `,
+        text: 'Anda telah keluar dari akun.',
         icon: 'success',
         confirmButtonText: 'OK',
         background: 'linear-gradient(145deg, #2d6a4f, #40916c)',
         color: '#ffffff',
         confirmButtonColor: '#ff416c',
-        width: '500px',
+        width: '400px',
         padding: '1.2rem',
         customClass: {
             popup: 'custom-swal-popup',
             title: 'custom-swal-title',
             htmlContainer: 'custom-swal-text'
         }
-    }).then((result) => {
-        console.log("✅ Konfirmasi logout selesai");
-        
-        // ✅ 9. REDIRECT KE DASHBOARD
+    }).then(() => {
+        // ✅ OTOMATIS KE HALAMAN UTAMA
         showSection('dashboard');
         
-        // ✅ 10. UPDATE STATUS TERAKHIR
+        // ✅ RESET STATUS PEMBAYARAN & PAKET
+        paketActive = false;
+        pembayaranVerified = false;
+        paketDuration = 0;
+        waktuSisa = 0;
+        
+        // ✅ UPDATE DASHBOARD
         updateDashboardStatus();
         
-        // ✅ 11. VERIFIKASI DATA MASIH ADA
-        setTimeout(() => {
-            console.log("🔍 Verifikasi data pasca-logout:");
-            const savedGallery = localStorage.getItem(STORAGE_KEYS.GALLERY_DATA);
-            console.log("📦 Gallery data in storage:", savedGallery ? "ADA" : "TIDAK ADA");
-            
-            if (savedGallery) {
-                const parsedGallery = JSON.parse(savedGallery);
-                console.log("✅ Data tersimpan dengan aman:", parsedGallery.length, "items");
-            }
-        }, 1000);
-    });
-
-    console.log("✅ PROSES LOGOUT SELESAI - DATA TERJAGA");
-    console.log("📊 Status akhir:", {
-        currentUser: currentUser ? "ADA" : "NULL",
-        galleryItems: galleryImages ? galleryImages.length : 0,
-        dataInStorage: localStorage.getItem(STORAGE_KEYS.GALLERY_DATA) ? "ADA" : "TIDAK ADA"
-    });
-}
-
-// ✅ SISTEM LOAD DATA YANG LEBIH KUAT SAAT PAGE LOAD
-window.addEventListener('load', function() {
-    console.log("🚀 PAGE LOAD - INITIALIZING APPLICATION");
-    
-    // ✅ 1. INISIALISASI VARIABEL PERTAMA (SEBELUM LOAD DATA)
-    console.log("🔄 Inisialisasi variabel...");
-    initVariables();
-    
-    // ✅ 2. LOAD SEMUA DATA DARI LOCALSTORAGE
-    console.log("📦 Loading data dari localStorage...");
-    const dataLoaded = loadAllData();
-    console.log("✅ Hasil loading data:", dataLoaded ? "BERHASIL" : "GAGAL");
-    
-    // ✅ 3. TAMPILKAN DATA YANG DILOAD
-    console.log("📊 Data setelah load:", {
-        currentUser: currentUser ? currentUser.email : 'TIDAK ADA',
-        galleryImages: galleryImages ? galleryImages.length : 0,
-        paketActive: paketActive,
-        waktuSisa: waktuSisa
-    });
-    
-    // ✅ 4. INISIALISASI KOMPONEN LAIN
-    console.log("🔧 Inisialisasi komponen...");
-    initSidebar();
-    
-    // ✅ 5. JIKA ADA USER, LOAD UI DAN GALLERY
-    if (currentUser) {
-        console.log("👤 User ditemukan:", currentUser.email);
-        updateUIAfterLogin();
-        
-        // ✅ LOAD GALLERY DARI galleryImages YANG SUDAH DILOAD
-        setTimeout(() => {
-            console.log("🖼 Loading gallery dari memory...");
-            loadUserGallery();
-            console.log("✅ Gallery loaded:", galleryImages.length, "items");
-        }, 1000);
-        
-    } else {
-        console.log("➡ Tidak ada user session");
-        // ✅ COBA LOAD GALLERY MESKI TANPA USER (data mungkin masih ada)
-        if (galleryImages && galleryImages.length > 0) {
-            console.log("📸 Ada gallery data tanpa user:", galleryImages.length, "items");
-            setTimeout(() => {
-                loadUserGallery();
-            }, 1000);
+        // ✅ MATIKAN KAMERA JIKA SEDANG AKTIF
+        if (stream) {
+            stopCamera();
         }
-    }
-    
-    // ✅ 6. UPDATE DASHBOARD
-    updateDashboardStatus();
-    
-    // ✅ 7. JALANKAN TIMER JIKA PAKET AKTIF
-    if (paketActive && waktuSisa > 0) {
-        console.log("⏰ Menjalankan timer paket...");
-        mulaiTimerPaket();
-    }
-    
-    console.log("✅ APPLICATION INITIALIZATION COMPLETED");
-});
-
-// ✅ FUNGSI UNTUK INISIALISASI VARIABEL
-function initVariables() {
-    // ✅ PASTIKAN SEMUA VARIABEL ADA
-    if (typeof galleryImages === 'undefined') {
-        galleryImages = [];
-    }
-    if (typeof currentUser === 'undefined') {
-        currentUser = null;
-    }
-    if (typeof paketActive === 'undefined') {
-        paketActive = false;
-    }
-    if (typeof pembayaranVerified === 'undefined') {
-        pembayaranVerified = false;
-    }
-    if (typeof paketDuration === 'undefined') {
-        paketDuration = 0;
-    }
-    if (typeof waktuSisa === 'undefined') {
-        waktuSisa = 0;
-    }
-    if (typeof currentIndex === 'undefined') {
+        
         currentIndex = 0;
-    }
-    if (typeof showingPhoto === 'undefined') {
-        showingPhoto = false;
-    }
-    if (typeof isPreviewActive === 'undefined') {
-        isPreviewActive = false;
-    }
-    
-    console.log("✅ Variabel diinisialisasi");
+    });
 }
+
+// ✅ MODIFIKASI AUTO LOGIN SAAT PAGE LOAD
+window.addEventListener('load', function() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        
+        // ✅ LOAD DATA PAKET DARI USER PROFILE JIKA ADA
+        if (currentUser.paket && currentUser.waktuSisa > 0) {
+            paketActive = true;
+            pembayaranVerified = true;
+            paketDuration = currentUser.paketDuration || 0;
+            waktuSisa = currentUser.waktuSisa || 0;
+            
+            console.log('✅ Load paket dari user:', currentUser.paket, 'Sisa waktu:', waktuSisa);
+        }
+        
+        // ✅ PASTIKAN EVENT LISTENER SESUAI STATUS LOGIN
+        const menuLogin = document.getElementById('menuLogin');
+        if (currentUser) {
+            menuLogin.removeEventListener('click', showLoginMenu);
+            menuLogin.addEventListener('click', showUserMenu);
+        } else {
+            menuLogin.removeEventListener('click', showUserMenu);
+            menuLogin.addEventListener('click', showLoginMenu);
+        }
+        
+        updateUIAfterLogin();
+        updateDashboardStatus(); // ✅ UPDATE DASHBOARD DENGAN DATA PAKET
+    }
+});
 
 // ===== ✅ FUNGSI BARU: UPDATE STATUS DI DASHBOARD =====
 function updateDashboardStatus() {
@@ -4977,26 +5166,20 @@ function updatePackageCounter() {
 }
 
 function loadUserGallery() {
-    console.log("🔄 LOAD USER GALLERY CALLED");
-    
-    // ✅ RESET SEBELUM LOAD
-    gallery.innerHTML = "";
-    
-    if (!galleryImages || galleryImages.length === 0) {
-        console.log("➡ No gallery images to display");
-        return;
-    }
+    if (currentUser && currentUser.gallery && currentUser.gallery.length > 0) {
+        galleryImages = [];
+        gallery.innerHTML = "";
+        console.log("🔄 Loading gallery dari storage:", currentUser.gallery.length + " items");
 
-    console.log("🎨 Creating thumbnails for:", galleryImages.length, "items");
+        currentUser.gallery.forEach((item, index) => {
+            // VALIDASI DATA SEBELUM LOAD
+            if (!item || !item.data || !item.id) {
+                console.warn("⚠ Item gallery corrupt, skip:", item);
+                return;
+            }
 
-    galleryImages.forEach((item, index) => {
-        // ✅ VALIDASI DATA
-        if (!item || !item.id || !item.data) {
-            console.warn("⚠ Invalid item, skipping:", item);
-            return;
-        }
+            galleryImages.push(item);
 
-        try {
             if (item.type === 'photo') {
                 const thumb = document.createElement('img');
                 thumb.className = "thumb";
@@ -5007,197 +5190,120 @@ function loadUserGallery() {
                     showingPhoto = true;
                     showOnCamera(index);
                 };
+
+                // 🎯 STYLE YANG SAMA
+                thumb.style.width = "140px";
+                thumb.style.height = "105px";
+                thumb.style.objectFit = "cover";
+                thumb.style.borderRadius = "12px";
+                thumb.style.flexShrink = "0";
+                thumb.style.display = "block";
+
                 gallery.appendChild(thumb);
-                
             } else if (item.type === 'video') {
-                const videoContainer = document.createElement('div');
-                videoContainer.style.position = 'relative';
-                videoContainer.style.display = 'inline-block';
-                videoContainer.setAttribute('data-id', item.id);
-                
-                const vid = document.createElement('video');
-                vid.src = item.data;
-                vid.className = "thumb";
-                vid.muted = true;
-                vid.loop = true;
-                vid.autoplay = true;
-                vid.style.transform = "scaleX(1)";
-                vid.controls = false;
-                
-                const controlsOverlay = document.createElement('div');
-                controlsOverlay.style.position = 'absolute';
-                controlsOverlay.style.bottom = '5px';
-                controlsOverlay.style.left = '5px';
-                controlsOverlay.style.right = '5px';
-                controlsOverlay.style.background = 'rgba(0,0,0,0.7)';
-                controlsOverlay.style.borderRadius = '10px';
-                controlsOverlay.style.padding = '5px';
-                controlsOverlay.style.display = 'flex';
-                controlsOverlay.style.alignItems = 'center';
-                controlsOverlay.style.gap = '8px';
-                controlsOverlay.style.fontSize = '10px';
-                controlsOverlay.style.color = 'white';
-                
-                const playBtn = document.createElement('button');
-                playBtn.innerHTML = '▶';
-                playBtn.style.background = 'none';
-                playBtn.style.border = 'none';
-                playBtn.style.color = 'white';
-                playBtn.style.cursor = 'pointer';
-                playBtn.style.fontSize = '12px';
-                
-                const timeDisplay = document.createElement('span');
-                timeDisplay.textContent = '0:00';
-                
-                controlsOverlay.appendChild(playBtn);
-                controlsOverlay.appendChild(timeDisplay);
-                videoContainer.appendChild(vid);
-                videoContainer.appendChild(controlsOverlay);
-                
-                playBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (vid.paused) {
-                        vid.play();
-                        playBtn.innerHTML = '❚❚';
-                    } else {
-                        vid.pause();
-                        playBtn.innerHTML = '▶';
-                    }
-                };
-                
-                vid.ontimeupdate = () => {
-                    const minutes = Math.floor(vid.currentTime / 60);
-                    const seconds = Math.floor(vid.currentTime % 60);
-                    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                };
-                
-                videoContainer.onclick = () => {
-                    currentIndex = index;
-                    showVideoOnCamera(item.data, true);
-                };
-                
-                gallery.appendChild(videoContainer);
+                // VIDEO: PASTIKAN DATA MASIH VALID
+                if (item.data && (item.data.startsWith('data:') || item.data.startsWith('blob:'))) {
+                    const videoContainer = document.createElement('div');
+                    videoContainer.style.position = 'relative';
+                    videoContainer.style.display = 'inline-block';
+                    videoContainer.setAttribute('data-id', item.id);
+
+                    videoContainer.style.width = "100px";
+                    videoContainer.style.height = "75px";
+                    videoContainer.style.borderRadius = "18px";
+                    videoContainer.style.overflow = "hidden"; // ✅ PENTING!
+                    videoContainer.style.flexShrink = "0"; // ✅ AGAR TIDAK TERSEBAR
+
+                    const vid = document.createElement('video');
+                    vid.src = item.data;
+                    vid.className = "thumb";
+                    vid.muted = true;
+                    vid.loop = true;
+                    vid.autoplay = true;
+                    vid.style.transform = "scaleX(1)";
+                    vid.controls = false;
+
+                    vid.style.width = "100%";
+                    vid.style.height = "100%";
+                    vid.style.objectFit = "cover"; // ✅ INI YANG MEMPERBAIKI!
+                    vid.style.borderRadius = "18px";
+
+                    const controlsOverlay = document.createElement('div');
+                    controlsOverlay.style.position = 'absolute';
+                    controlsOverlay.style.bottom = '5px';
+                    controlsOverlay.style.left = '5px';
+                    controlsOverlay.style.right = '5px';
+                    controlsOverlay.style.background = 'rgba(0,0,0,0.7)';
+                    controlsOverlay.style.borderRadius = '10px';
+                    controlsOverlay.style.padding = '5px';
+                    controlsOverlay.style.display = 'flex';
+                    controlsOverlay.style.alignItems = 'center';
+                    controlsOverlay.style.gap = '8px';
+                    controlsOverlay.style.fontSize = '10px';
+                    controlsOverlay.style.color = 'white';
+
+                    const playBtn = document.createElement('button');
+                    playBtn.innerHTML = '▶';
+                    playBtn.style.background = 'none';
+                    playBtn.style.border = 'none';
+                    playBtn.style.color = 'white';
+                    playBtn.style.cursor = 'pointer';
+                    playBtn.style.fontSize = '12px';
+
+                    const timeDisplay = document.createElement('span');
+                    timeDisplay.textContent = '0:00';
+
+                    controlsOverlay.appendChild(playBtn);
+                    controlsOverlay.appendChild(timeDisplay);
+
+                    videoContainer.appendChild(vid);
+                    videoContainer.appendChild(controlsOverlay);
+
+                    playBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (vid.paused) {
+                            vid.play();
+                            playBtn.innerHTML = '❚❚';
+                        } else {
+                            vid.pause();
+                            playBtn.innerHTML = '▶';
+                        }
+                    };
+
+                    vid.ontimeupdate = () => {
+                        const minutes = Math.floor(vid.currentTime / 60);
+                        const seconds = Math.floor(vid.currentTime % 60);
+                        timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+
+                    videoContainer.onclick = () => {
+                        currentIndex = index;
+                        showVideoOnCamera(item.data, true);
+                    };
+
+                    gallery.appendChild(videoContainer);
+                } else {
+                    console.warn("⏰ Video data invalid, skip:", item.id);
+                }
             }
-            
-            console.log(`✅ Thumbnail created for: ${item.type} ${index}`);
-            
-        } catch (error) {
-            console.error(`❌ Error creating thumbnail for item ${index}:`, error);
-        }
-    });
-
-    console.log("✅ Gallery display completed:", gallery.children.length, "thumbnails created");
-    updatePackageCounter();
-}
-
-// ✅ FUNGSI BARU: SIMPAN DATA USER YANG KONSISTEN
-function saveUserData() {
-    if (!currentUser) return false;
-    
-    try {
-        // ✅ PASTIKAN SEMUA DATA TERKINI TERSIMPAN
-        const userData = {
-            ...currentUser,
-            // ✅ PASTIKAN GALLERY SELALU TERUPDATE
-            gallery: galleryImages,
-            // ✅ PASTIKAN COUNTER SESUAI DENGAN GALLERY
-            fotoTerambil: galleryImages.filter(item => item.type === 'photo').length,
-            videoTerambil: galleryImages.filter(item => item.type === 'video').length,
-            // ✅ PASTIKAN STATUS PAKET TERUPDATE
-            paket: currentUser.paket,
-            paketDuration: currentUser.paketDuration,
-            paketFotoLimit: currentUser.paketFotoLimit,
-            paketVideoLimit: currentUser.paketVideoLimit,
-            waktuSisa: currentUser.waktuSisa,
-            pembayaranVerified: currentUser.pembayaranVerified,
-            trialUsed: currentUser.trialUsed,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        // ✅ SIMPAN KE DUA LOKASI UNTUK REDUNDANSI
-        localStorage.setItem('user_' + currentUser.email, JSON.stringify(userData));
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
-        console.log("💾 Data user disimpan:", {
-            gallery: userData.gallery.length,
-            foto: userData.fotoTerambil,
-            video: userData.videoTerambil
         });
-        
-        return true;
-    } catch (e) {
-        console.error("❌ Gagal menyimpan data user:", e);
-        return false;
-    }
-}
 
-// ✅ FUNGSI BARU: LOAD DATA USER YANG ROBUST
-function loadUserData() {
-    const savedUser = localStorage.getItem('currentUser');
-    if (!savedUser) {
-        console.log("➡ Tidak ada data user tersimpan");
-        return null;
-    }
-    
-    try {
-        const userData = JSON.parse(savedUser);
-        
-        // ✅ VALIDASI DATA USER
-        if (!userData.email || !userData.gallery) {
-            console.warn("⚠ Data user tidak valid");
-            return null;
-        }
-        
-        // ✅ LOAD DATA DARI BACKUP (user_email) JIKA PERLU
-        const backupData = localStorage.getItem('user_' + userData.email);
-        if (backupData) {
-            const backupUser = JSON.parse(backupData);
-            if (backupUser.gallery && backupUser.gallery.length > userData.gallery.length) {
-                console.log("🔄 Gunakan data dari backup (lebih lengkap)");
-                return backupUser;
+         // 🎯 SCROLL KE FOTO TERBARU DENGAN PRESISI
+        setTimeout(() => {
+            const gallery = document.getElementById('gallery');
+            if (gallery && gallery.children.length > 0) {
+                const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+                gallery.scrollTo({
+                    left: maxScroll,
+                    behavior: 'auto'
+                });
+                
+                updateScrollButtons();
+                console.log('🎠 Load gallery - scroll ke terbaru:', maxScroll);
             }
-        }
-        
-        console.log("✅ Data user loaded:", {
-            email: userData.email,
-            gallery: userData.gallery.length,
-            paket: userData.paket
-        });
-        
-        return userData;
-    } catch (e) {
-        console.error("❌ Gagal load data user:", e);
-        return null;
+        }, 500);
     }
 }
-
-// ✅ FUNGSI BARU: SYNCHRONIZE COUNTERS DENGAN GALLERY
-function syncCountersWithGallery() {
-    if (!currentUser || !currentUser.gallery) return;
-    
-    const fotoCount = currentUser.gallery.filter(item => item.type === 'photo').length;
-    const videoCount = currentUser.gallery.filter(item => item.type === 'video').length;
-    
-    // UPDATE COUNTER JIKA ADA PERBEDAAN
-    if (currentUser.fotoTerambil !== fotoCount) {
-        console.log(`🔄 Sync foto counter: ${currentUser.fotoTerambil} -> ${fotoCount}`);
-        currentUser.fotoTerambil = fotoCount;
-    }
-    
-    if (currentUser.videoTerambil !== videoCount) {
-        console.log(`🔄 Sync video counter: ${currentUser.videoTerambil} -> ${videoCount}`);
-        currentUser.videoTerambil = videoCount;
-    }
-    
-    // SIMPAN PERUBAHAN
-    try {
-        localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    } catch (e) {
-        console.error("❌ Gagal sync counter:", e);
-    }
-}
-
 // ✅ FUNGSI KONVERSI BLOB KE BASE64
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
@@ -5208,69 +5314,28 @@ function blobToBase64(blob) {
   });
 }
 
+// ✅ FUNGSI BARU: CLEANUP LOCALSTORAGE JIKA QUOTA PENUH
 function cleanupLocalStorage() {
     try {
-        // ✅ HANYA CLEANUP JIKA BENAR-BENAR PERLU
+        // ✅ HAPUS GALLERY DATA YANG LAMA UNTUK FREE UP SPACE
         if (currentUser && currentUser.gallery) {
-            // CEK UKURAN TOTAL LOCALSTORAGE
-            let totalSize = 0;
-            for (let key in localStorage) {
-                if (localStorage.hasOwnProperty(key)) {
-                    totalSize += localStorage[key].length;
-                }
-            }
-            
-            // JIKA HAMPIR PENUH (4.5MB dari 5MB), LAKUKAN CLEANUP
-            if (totalSize > 4.5 * 1024 * 1024) {
-                console.log("🧹 Storage hampir penuh, lakukan cleanup...");
+            // SIMPAN HANYA 10 ITEM TERBARU (bukan 5)
+            if (currentUser.gallery.length > 10) {
+                currentUser.gallery = currentUser.gallery.slice(-10);
                 
-                // SIMPAN HANYA 15 ITEM TERBARU (lebih longgar)
-                if (currentUser.gallery.length > 15) {
-                    currentUser.gallery = currentUser.gallery.slice(-15);
-                    
-                    // UPDATE JUGA galleryImages
-                    galleryImages = [...currentUser.gallery];
-                    
-                    localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    
-                    console.log("✅ Cleanup gallery: hanya simpan 15 item terbaru");
-                    
-                    // RELOAD GALLERY SETELAH CLEANUP
-                    loadUserGallery();
-                }
+                // ✅ UPDATE JUGA galleryImages
+                galleryImages = [...currentUser.gallery];
+                
+                localStorage.setItem('user_' + currentUser.email, JSON.stringify(currentUser));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                console.log(" 🔧 Cleanup gallery: hanya simpan 10 item terbaru");
+                
+                // ✅ RELOAD GALLERY SETELAH CLEANUP
+                loadUserGallery();
             }
         }
     } catch (e) {
-        console.error("❌ Gagal cleanup localStorage:", e);
-    }
-}
-
-// ✅ FUNGSI CLEANUP YANG TIDAK MENGHAPUS DATA PENTING
-function safeCleanup() {
-    try {
-        // ✅ HANYA BERSIHKAN DATA SEMENTARA, BUKAN DATA USER
-        const keysToKeep = [
-            STORAGE_KEYS.USER_DATA,
-            STORAGE_KEYS.GALLERY_DATA,
-            'currentUser'
-        ];
-        
-        if (currentUser && currentUser.email) {
-            keysToKeep.push(`user_${currentUser.email}`);
-        }
-        
-        // ✅ HAPUS HANYA KEY YANG TIDAK PENTING
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (!keysToKeep.includes(key) && !key.startsWith('user_')) {
-                localStorage.removeItem(key);
-            }
-        }
-        
-        console.log("🧹 Safe cleanup completed - important data preserved");
-    } catch (error) {
-        console.error("❌ Cleanup error:", error);
+        console.error(" ❌ Gagal cleanup localStorage:", e);
     }
 }
 
@@ -5340,16 +5405,160 @@ function updateDownloadButtonPosition() {
         
         // Jika gallery ada konten, posisikan di samping gallery
         if (gallery.children.length > 0) {
-            downloadSection.style.bottom = '120px';
+            downloadSection.style.bottom = '30px';
             downloadSection.style.right = '20px';
         } else {
-            // Jika gallery kosong, posisikan lebih ke tengah bawah
-            downloadSection.style.bottom = '50%';
+            downloadSection.style.bottom = '30px';
             downloadSection.style.right = '20px';
-            downloadSection.style.transform = 'translateY(50%)';
         }
     }
 }
+
+// 🎠 FUNGSI SCROLL GALLERY YANG PRESISI
+function scrollGalleryLeft() {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+    
+    // 🎯 HITUNG POSISI YANG PRESISI
+    const thumbWidth = 140; // width thumbnail
+    const gap = 15; // gap antara thumbnail
+    const thumbWithGap = thumbWidth + gap;
+    
+    // 🎯 SCROLL KE THUMBNAIL SEBELUMNYA YANG UTUH
+    const currentScroll = gallery.scrollLeft;
+    const targetScroll = Math.floor(currentScroll / thumbWithGap) * thumbWithGap - thumbWithGap;
+    
+    gallery.scrollTo({
+        left: Math.max(0, targetScroll), // 🎯 PASTIKAN TIDAK KURANG DARI 0
+        behavior: 'smooth'
+    });
+    
+    console.log('← Scroll kiri presisi:', { 
+        from: currentScroll, 
+        to: Math.max(0, targetScroll),
+        thumbWidth: thumbWithGap
+    });
+    
+    // UPDATE TOMBOL SETELAH SCROLL
+    setTimeout(updateScrollButtons, 400);
+}
+
+// 🎠 FUNGSI SCROLL GALLERY YANG SIMPLE
+function scrollGalleryLeft() {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+    
+    // 🎯 SCROLL 1 THUMBNAIL + GAP KE KIRI
+    const scrollAmount = 140 + 15; // width + gap
+    
+    gallery.scrollBy({
+        left: -scrollAmount,
+        behavior: 'smooth'
+    });
+    
+    console.log('← Scroll kiri:', scrollAmount + 'px');
+    
+    // 🎯 UPDATE TOMBOL SETELAH SCROLL SELESAI
+    setTimeout(updateScrollButtons, 500);
+}
+
+function scrollGalleryRight() {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+    
+    // 🎯 SCROLL 1 THUMBNAIL + GAP KE KANAN
+    const scrollAmount = 140 + 15; // width + gap
+    
+    gallery.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+    });
+    
+    console.log('→ Scroll kanan:', scrollAmount + 'px');
+    
+    // 🎯 UPDATE TOMBOL SETELAH SCROLL SELESAI
+    setTimeout(updateScrollButtons, 500);
+}
+
+// 🎠 FUNGSI UPDATE TOMBOL SCROLL YANG SUPER SIMPLE
+function updateScrollButtons() {
+    const gallery = document.getElementById('gallery');
+    const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+    const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+    if (!gallery || !scrollLeftBtn || !scrollRightBtn) {
+        return;
+    }
+
+    const totalItems = gallery.children.length;
+    
+    // 🎯 LOGIKA SANGAT SIMPLE:
+    // - Tombol kiri: tampil jika BUKAN di posisi paling kiri
+    // - Tombol kanan: tampil jika BUKAN di posisi paling kanan
+    
+    const isAtStart = gallery.scrollLeft <= 5;
+    const isAtEnd = gallery.scrollLeft >= (gallery.scrollWidth - gallery.clientWidth - 5);
+    
+    console.log('🎠 Posisi Scroll:', {
+        scrollLeft: gallery.scrollLeft,
+        scrollWidth: gallery.scrollWidth,
+        clientWidth: gallery.clientWidth,
+        isAtStart: isAtStart,
+        isAtEnd: isAtEnd,
+        totalItems: totalItems
+    });
+
+    // 🎯 TAMPILKAN TOMBOL HANYA JIKA ADA LEBIH DARI 3 ITEM
+    if (totalItems > 3) {
+        scrollLeftBtn.style.display = isAtStart ? 'none' : 'flex';
+        scrollRightBtn.style.display = isAtEnd ? 'none' : 'flex';
+        
+        console.log('🎠 Status Tombol:', {
+            kiri: isAtStart ? 'HIDDEN' : 'SHOW',
+            kanan: isAtEnd ? 'HIDDEN' : 'SHOW'
+        });
+    } else {
+        // 🎯 JIKA KURANG DARI 4 ITEM, SEMBUNYIKAN SEMUA TOMBOL
+        scrollLeftBtn.style.display = 'none';
+        scrollRightBtn.style.display = 'none';
+        console.log('🎠 Tombol disembunyikan - kurang dari 4 item');
+    }
+}
+
+// 🎠 FUNGSI UNTUK MEMASTIKAN THUMBNAIL TERTATA DENGAN BAIK
+function limitVisibleThumbnails() {
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+    
+    const thumbs = gallery.children;
+    const maxVisible = 8; // Maksimal thumbnail yang disimpan
+    
+    if (thumbs.length > maxVisible) {
+        // Hapus thumbnail terlama (yang paling kiri)
+        for (let i = 0; i < thumbs.length - maxVisible; i++) {
+            if (thumbs[0]) {
+                thumbs[0].remove();
+            }
+        }
+        console.log(`🎠 Dibersihkan ${thumbs.length - maxVisible} thumbnail terlama`);
+    }
+    
+    updateScrollButtons();
+}
+
+// 🎯 EVENT LISTENER UNTUK DETEKSI SCROLL MANUAL
+// 🎯 EVENT LISTENER UNTUK SCROLL REAL-TIME
+document.addEventListener('DOMContentLoaded', function() {
+    const gallery = document.getElementById('gallery');
+    if (gallery) {
+        // 🎯 UPDATE TOMBOL SAAT USER SCROLL MANUAL
+        gallery.addEventListener('scroll', function() {
+            // 🎯 GUNAKAN DEBOUNCE UNTUK PERFORMANCE
+            clearTimeout(gallery.scrollTimeout);
+            gallery.scrollTimeout = setTimeout(updateScrollButtons, 50);
+        });
+    }
+});
 
 </script>  
 </body>  
